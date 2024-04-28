@@ -70,6 +70,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'thedailyreport.wsgi.application'
+AUTH_USER_MODEL = "news.User"
 
 
 # Database
