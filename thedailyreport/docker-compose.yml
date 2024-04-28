@@ -15,25 +15,21 @@ services:
       context: .
       dockerfile: Dockerfile
     command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/usr/src/app
     ports:
       - "8000:8000"
     depends_on:
       - db
     networks:
       - my_network
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /src
+          ignore:
+            - node_modules/
     volumes:
-      - ./frontend:/usr/src/app
-    ports:
-      - "3000:3000"
-    networks:
-      - my_network
+      - .:/usr/src/app
 
 networks:
   my_network:
