@@ -6,11 +6,13 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from .models import User
+from . import utils
 
 
 # Project Views
 def index(request):
-    return render(request, "news/index.html")
+    article_list = utils.scrapeNews_DIGI24()
+    return render(request, "news/index.html", {"article_list": article_list})
 
 
 def login_view(request):

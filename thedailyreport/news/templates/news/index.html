@@ -3,16 +3,17 @@
 
 {% block body %}
 
-    <div id="all-posts">
-    </div>
+    <div id="all-news">
 
-    <div id="following-posts">
-    </div>
+        {% for article in article_list %}
+        <div class="article">
+            <img src="{{article.img_src}}" alt="Article Image Source">
+            <h3>{{article.title}}</h3>
+            <p>{{article.summary}}</p>
+            <a href="{{article.url}}">Link</a>
+        </div>
+        {% endfor %}
 
-    <div id="profile">
-    </div>
-
-    <div id="new-post">
     </div>
 
 {% endblock %}
