@@ -1,9 +1,12 @@
 # Imports
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from .models import User
 from . import utils
@@ -13,6 +16,29 @@ from . import utils
 def index(request):
     article_list = utils.scrapeNews_DIGI24()
     return render(request, "news/index.html", {"article_list": article_list})
+
+
+def get_user(request):
+    user = request.user
+    if user.is_authenticated:
+        return JsonResponse({
+            'is_authenticated': True,
+            'username': user.username,
+        })
+    return JsonResponse({
+        'is_authenticated': False,
+        'username': 'N/A',
+    })
+
+
+def get_all_news(request):
+
+    article_list = utils.scrapeNews_DIGI24()
+    # Scrape All other sites
+
+    return JsonResponse({
+        "article_list": article_list
+    })
 
 
 def login_view(request):
