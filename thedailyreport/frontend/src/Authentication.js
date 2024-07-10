@@ -24,7 +24,7 @@ const Login = ({ setUser }) => {
 
     return (
         <div>
-            <h2>Login</h2>
+            <h2 style={{ margin: '20px' }}>Login</h2>
             {message && <div>{message}</div>}
             <form onSubmit={handleLogin}>
                 <div className="form-group">
@@ -35,7 +35,7 @@ const Login = ({ setUser }) => {
                 </div>
                 <button className="btn btn-primary" style={{ margin: '20px' }} type="submit">Login</button>
             </form>
-            <p>Don't have an account? <a href="/register">Register here.</a></p>
+            <p style={{ margin: '20px' }}>Don't have an account? <a href="/register">Register here.</a></p>
         </div>
     );
 };
@@ -55,8 +55,8 @@ const Logout = ({ setUser }) => {
 
     return (
         <div>
-            <h2>Logout</h2>
-            <button className="btn btn-primary" onClick={handleLogout}>Logout</button>
+            <h2 style={{ margin: '20px' }}>Logout</h2>
+            <button className="btn btn-primary" style={{ margin: '20px' }} onClick={handleLogout}>Logout</button>
         </div>
     );
 };
@@ -93,7 +93,7 @@ const Register = ({ setUser }) => {
 
     return (
         <div>
-            <h2>Register</h2>
+            <h2 style={{ margin: '20px' }}>Register</h2>
             {message && <div>{message}</div>}
             <form onSubmit={handleRegister}>
                 <div className="form-group">
@@ -110,7 +110,7 @@ const Register = ({ setUser }) => {
                 </div>
                 <button className="btn btn-primary" style={{ margin: '20px' }} type="submit">Register</button>
             </form>
-            <p>Already have an account? <a href="/login">Log In here.</a></p>
+            <p style={{ margin: '20px' }}>Already have an account? <a href="/login">Log In here.</a></p>
         </div>
     );
 };
