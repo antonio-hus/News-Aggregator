@@ -1,11 +1,12 @@
-import logo from './logo.svg';
-import './App.css';
-import {useState, useEffect} from "react";
-import AllNews from './NewsFeed';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
 
-function App() {
+import AllNews from './NewsFeed';
+import { Login, Logout, Register } from './Authentication';
+import './App.css';
 
+function App() {
     const [user, setUser] = useState({
         isAuthenticated: false,
         username: ''
@@ -25,51 +26,50 @@ function App() {
     }, []);
 
     return (
-        <>
+        <Router>
             <nav className="navbar navbar-expand-lg navbar-light bg-light">
-
-                <a className="navbar-brand" href="/">The Daily Report</a>
+                <Link className="navbar-brand" to="/">The Daily Report</Link>
                 <div>
-                  <ul className="navbar-nav mr-auto">
-
-                    { user.isAuthenticated && (
+                    <ul className="navbar-nav mr-auto">
+                        { user.isAuthenticated && (
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/user"><strong>{ user.username }</strong></Link>
+                            </li>
+                        )}
                         <li className="nav-item">
-                            <a className="nav-link" href="/user"><strong>{ user.username }</strong></a>
+                            <Link className="nav-link" to="/">All News</Link>
                         </li>
-                    )}
-
-                    <li className="nav-item">
-                      <a className="nav-link" href="/">All News</a>
-                    </li>
-
-                    {user.isAuthenticated ? (
-                          <>
-                            <li className="nav-item">
-                              <a className="nav-link" href="#">For You</a>
-                            </li>
-                            <li className="nav-item">
-                              <a className="nav-link" href="/logout">Log Out</a>
-                            </li>
-                          </>
-                    ) : (
-                          <>
-                            <li className="nav-item">
-                              <a className="nav-link" href="/login">Log In</a>
-                            </li>
-                            <li className="nav-item">
-                              <a className="nav-link" href="/register">Register</a>
-                            </li>
-                          </>
-                    )}
-
-                  </ul>
+                        {user.isAuthenticated ? (
+                            <>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="#">For You</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/logout">Log Out</Link>
+                                </li>
+                            </>
+                        ) : (
+                            <>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/login">Log In</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/register">Register</Link>
+                                </li>
+                            </>
+                        )}
+                    </ul>
                 </div>
             </nav>
-
             <div className="body">
-                <AllNews/>
+                <Routes>
+                    <Route exact path="/" element={<AllNews />} />
+                    <Route path="/login" element={<Login setUser={setUser} />} />
+                    <Route path="/logout" element={user.isAuthenticated ? <Logout setUser={setUser} /> : <Navigate to="/" />} />
+                    <Route path="/register" element={<Register setUser={setUser} />} />
+                </Routes>
             </div>
-          </>
+        </Router>
     );
 }
 
