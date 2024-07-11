@@ -2,13 +2,32 @@ version: '3.8'
 
 services:
   db:
-    image: postgres
+    image: postgres:latest
+    container_name: db
     environment:
       POSTGRES_DB: news_db
       POSTGRES_USER: antonio
       POSTGRES_PASSWORD: mypassword
     ports:
       - "5432:5432"
+    networks:
+      - my_network
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8001:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_NAME=news_db
+      - DATABASE_USER=antonio
+      - DATABASE_PASSWORD=mypassword
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
     networks:
       - my_network
 
@@ -21,6 +40,12 @@ services:
       - "8000:8000"
     depends_on:
       - db
+    environment:
+      - DATABASE_NAME=news_db
+      - DATABASE_USER=antonio
+      - DATABASE_PASSWORD=mypassword
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
     networks:
       - my_network
     volumes:

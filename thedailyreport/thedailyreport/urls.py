@@ -20,7 +20,13 @@ from django.views.generic import TemplateView
 
 
 urlpatterns = [
+
+    # Admin Website
     path('admin/', admin.site.urls),
+
+    # Backend ( API Endpoints )
     path('api/', include('news.urls')),
+
+    # Frontend - React Project
     path('', TemplateView.as_view(template_name='index.html')), 
 ]
