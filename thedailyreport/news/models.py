@@ -23,15 +23,36 @@ class User(AbstractUser):
         return self.followed_news_sources.filter(id=news_source.id).exists()
 
 
-# Image Class
-class Image(models.Model):
+# Media Class
+class Media(models.Model):
 
-    # Image Defined by its URL
-    # TODO: Improvement => Save Images to Database ( for persistence )
+    # Media Defined by its URL
+    # TODO: Improvement => Save Medias to Database ( for persistence )
     url = models.URLField()
 
     def __str__(self):
         return self.url
+
+
+# Category Class
+class Category(models.Model):
+
+    # Category is defined by its title
+    title = models.CharField(max_length=64)
+
+    def __str__(self):
+        return self.title
+
+
+# Tag Class
+class Tag(models.Model):
+
+    # Tag is defined by its name and category
+    title = models.CharField(max_length=64)
+    categories = models.ManyToManyField(to=Category, related_name="categorized_tags")
+
+    def __str__(self):
+        return self.title
 
 
 # News Source Class
@@ -59,28 +80,29 @@ class Article(models.Model):
     # Header Data
     title_hash = models.CharField(max_length=64)
     content_hash = models.CharField(max_length=64)
-    image_hash = models.CharField(max_length=64, blank=True, null=True)
+    media_hash = models.CharField(max_length=64, blank=True, null=True)
     publish_date = models.DateTimeField()
     last_updated_date = models.DateTimeField()
 
     # Article Information Data
     writer = models.CharField(max_length=128)
-    tags = models.CharField(max_length=256, blank=True, null=True)
+    tags = models.ManyToManyField(to=Tag, related_name="tagged_articles")
+    categories = models.ManyToManyField(to=Category, related_name="categorized_articles")
 
     # Article Preview Information
     title_preview = models.CharField(max_length=256)
     content_preview = models.TextField()
-    image_preview = models.ForeignKey(to=Image, on_delete=models.PROTECT, related_name="preview_image")
+    media_preview = models.ForeignKey(to=Media, on_delete=models.PROTECT, related_name="preview_media")
 
     # Article Content Information
     title_full = models.CharField(max_length=256)
     content_full = models.TextField()
-    images_full = models.ManyToManyField(to=Image, related_name="full_images")
+    medias_full = models.ManyToManyField(to=Media, related_name="full_medias")
 
     # Article Mailing Information
     title_mailing = models.CharField(max_length=256)
     content_mailing = models.TextField()
-    images_mailing = models.ManyToManyField(to=Image, related_name="mailing_images")
+    medias_mailing = models.ManyToManyField(to=Media, related_name="mailing_medias")
 
     # News Source owner of article
     publisher = models.ForeignKey(to=NewsSource, on_delete=models.CASCADE, related_name="articles")

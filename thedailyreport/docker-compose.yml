@@ -13,24 +13,6 @@ services:
     networks:
       - my_network
 
-  web:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/code
-    ports:
-      - "8001:8000"
-    depends_on:
-      - db
-    environment:
-      - DATABASE_NAME=news_db
-      - DATABASE_USER=antonio
-      - DATABASE_PASSWORD=mypassword
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432
-    networks:
-      - my_network
-
   backend:
     build:
       context: .
