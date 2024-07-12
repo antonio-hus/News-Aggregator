@@ -83,29 +83,18 @@ class Article(models.Model):
     media_hash = models.CharField(max_length=64, blank=True, null=True)
     publish_date = models.DateTimeField()
     last_updated_date = models.DateTimeField()
-
-    # Article Information Data
-    writer = models.CharField(max_length=128)
+    publisher = models.ForeignKey(to=NewsSource, on_delete=models.CASCADE, related_name="articles")
     tags = models.ManyToManyField(to=Tag, related_name="tagged_articles")
     categories = models.ManyToManyField(to=Category, related_name="categorized_articles")
 
-    # Article Preview Information
-    title_preview = models.CharField(max_length=256)
-    content_preview = models.TextField()
+    # Article Information
+    title = models.CharField(max_length=256)
+    provided_summary = models.TextField()
+    generated_summary = models.TextField()
+    content = models.TextField()
     media_preview = models.ForeignKey(to=Media, on_delete=models.PROTECT, related_name="preview_media")
-
-    # Article Content Information
-    title_full = models.CharField(max_length=256)
-    content_full = models.TextField()
     medias_full = models.ManyToManyField(to=Media, related_name="full_medias")
-
-    # Article Mailing Information
-    title_mailing = models.CharField(max_length=256)
-    content_mailing = models.TextField()
-    medias_mailing = models.ManyToManyField(to=Media, related_name="mailing_medias")
-
-    # News Source owner of article
-    publisher = models.ForeignKey(to=NewsSource, on_delete=models.CASCADE, related_name="articles")
+    writer = models.CharField(max_length=128)
 
     # User Interactions
     liked_by = models.ManyToManyField(User, related_name='liked_articles', blank=True)

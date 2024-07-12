@@ -1,8 +1,7 @@
 # Imports Section
+# Python Libraries
 import requests
 from bs4 import BeautifulSoup
-
-# Web Scraper
 
 
 # Gets news from dig24 Website
@@ -13,9 +12,8 @@ def get():
 
     # Send a GET request to the URL
     response = requests.get("https://www.digi24.ro/")
-
-    # Check if the request was successful
     if response.status_code == 200:
+
         # Parse the HTML content of the page
         soup = BeautifulSoup(response.content, 'html.parser')
 
