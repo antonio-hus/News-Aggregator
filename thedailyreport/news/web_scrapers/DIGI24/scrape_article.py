@@ -16,26 +16,31 @@ def get(url):
         # Parse the HTML content of the page
         article = BeautifulSoup(response.content, 'html.parser')
 
-        # Extracting dates
-        times = article.find_all('time')
-        last_updated_date = times[0].get_text().strip() if times else ''
-        publish_date = times[1].get_text().strip() if len(times) > 1 else ''
+        # Dates will be set to timezone.now()
+        last_updated_date = ''
+        publish_date = ''
 
         # Finding main content
         paragraphs = article.find_all('p')
         article_content = [paragraph.text.strip() for paragraph in paragraphs]
+        content = '\n'.join(article_content[:-2]) if article_content else "Content not found."
 
-        content = '\n'.join(article_content) if article_content else "Content not found."
-
-        # Extracting author
-        author_tag = article.find('p', text=' Editor : ')
-        if author_tag:
-            author_name = author_tag.find('a').text.strip()
+        if "Editor : " in article_content[-2]:
+            author_name = article_content[-2].replace("Editor : ", "").strip()
         else:
-            author_name = 'Author not found'
+            # Author is not denoted by a p
+            # Enlarge content
+            content = content + "\n" + article_content[-2]
+
+            # Extracting author
+            author_tag = article.find('p', text=lambda x: x and " Editor : " in x)
+            if author_tag:
+                author_name = author_tag.text.replace(" Editor : ", "").strip()
+            else:
+                author_name = 'Author not found'
 
         # Extracting tags
-        tags = [tag.get_text().strip() for tag in article.find_all('li', class_="tags-list-item")]
+        tags = [tag.get_text().strip() for tag in article.find_all('li', class_="tags-list-item") if "Etichete:" not in tag.get_text().strip()]
 
         article_data = {
             "writer": author_name,

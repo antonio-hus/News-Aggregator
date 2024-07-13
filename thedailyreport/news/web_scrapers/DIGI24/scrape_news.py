@@ -45,6 +45,9 @@ def get():
             if url_elem[0] == '/':
                 url_elem = "https://www.digi24.ro" + url_elem
 
+            if "digisport.ro" in url_elem:
+                continue
+
             # Extract image source
             img_elem = article.find('img')['src'] if article.find('img') else "No image found"
 
@@ -52,7 +55,7 @@ def get():
             article_data = scrape_article.get(url_elem)
             complete_article_data = {
                 "title_hash": hashlib.sha256(title.encode('utf-8')).hexdigest(),
-                "content_hash": hashlib.sha256(article_data["content"].encode('utf-8')).hexdigest(),
+                "content_hash": hashlib.sha256(article_data["content"].encode   ('utf-8')).hexdigest(),
                 "media_hash": hashlib.sha256(img_elem.encode('utf-8')).hexdigest(),
                 "publisher": publisher,
                 "writer": article_data["writer"],

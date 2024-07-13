@@ -5,12 +5,24 @@
 import requests
 import os
 from datetime import datetime, timedelta
+import logging
 # Django Libraries
 from django.utils import timezone
 # User Defined
 from .web_scrapers import DIGI24
 from .models import User, Media, Category, Tag, NewsSource, Article
 
+###################
+# LOGGING ACTIONS #
+###################
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+file_handler = logging.FileHandler('periodic_update.log')
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 ###########################
 # WEB SCRAPERS OPERATIONS #
@@ -65,8 +77,11 @@ def periodicUpdate():
     - delete articles older than 7 days
     """
     article_list = getArticles()
+    logger.debug(f"Received article list: {article_list}")
+
     for publisher in article_list:
         for article in publisher:
+            logger.debug(f"Processing article: {article}")
 
             article["publisher"] = create_or_get_publisher(article["publisher"])
             if article["publish_date"] == "":
@@ -77,11 +92,13 @@ def periodicUpdate():
             # Object is already in database, and nothing changed
             if Article.objects.filter(title_hash=article["title_hash"],
                                       content_hash=article["content_hash"],
-                                      media_hash=["media_hash"]).exists():
+                                      media_hash=article["media_hash"]).exists():
 
+                logger.debug("Article already exists in database, no changes detected.")
                 # Delete articles older than 7 days
                 seven_days_ago = timezone.now() - timedelta(days=7)
-                Article.objects.filter(publish_date__lt=seven_days_ago).delete()
+                deleted_count, _ = Article.objects.filter(publish_date__lt=seven_days_ago).delete()
+                logger.debug(f"Deleted {deleted_count} articles older than 7 days.")
                 continue
 
             # Object is already in database, but something changed
@@ -89,44 +106,53 @@ def periodicUpdate():
             elif Article.objects.filter(title_hash=article["title_hash"],
                                         content_hash=article["content_hash"]).exists():
 
+                logger.debug("Found existing article with changed media preview.")
                 # Get the object
-                found_article = Article.objects.get(title_hash=article["title_hash"], content_hash=article["content_hash"])
+                found_article = Article.objects.get(title_hash=article["title_hash"],
+                                                    content_hash=article["content_hash"])
 
                 # Update Media & Media Hash
                 found_article.media_hash = article["media_hash"]
                 found_article.media_preview = create_or_get_media(article["media_preview"])
                 found_article.last_updated_date = timezone.now()
                 found_article.save()
+                logger.debug("Updated existing article.")
                 continue
 
             # Content Changed
             elif Article.objects.filter(title_hash=article["title_hash"],
                                         media_hash=article["media_hash"]).exists():
+                logger.debug("Found existing article with changed content.")
                 # Get the object
-                found_article = Article.objects.get(title_hash=article["title_hash"], media_hash=article["media_hash"])
+                found_article = Article.objects.get(title_hash=article["title_hash"],
+                                                    media_hash=article["media_hash"])
 
                 # Update Media & Media Hash
                 found_article.content_hash = article["content_hash"]
-                found_article.content_full = article["content"]
+                found_article.content = article["content"]
                 found_article.last_updated_date = timezone.now()
                 found_article.save()
+                logger.debug("Updated existing article.")
                 continue
 
             # Title Changed
             elif Article.objects.filter(content_hash=article["content_hash"],
                                         media_hash=article["media_hash"]).exists():
 
+                logger.debug("Found existing article with changed title.")
                 # Get the object
-                found_article = Article.objects.get(content_hash=article["content_hash"], media_hash=article["media_hash"])
+                found_article = Article.objects.get(content_hash=article["content_hash"],
+                                                    media_hash=article["media_hash"])
                 found_article.title_hash = article["title_hash"]
-                found_article.title_full = article["title"]
+                found_article.title = article["title"]
                 found_article.last_updated_date = timezone.now()
                 found_article.save()
+                logger.debug("Updated existing article.")
                 continue
 
             # Object was not found in the database => new Article
             else:
-
+                logger.debug("Creating new article in database.")
                 new_article = Article(
                     title_hash=article["title_hash"],
                     content_hash=article["content_hash"],
@@ -137,11 +163,12 @@ def periodicUpdate():
                     writer=article["writer"],
                     title=article["title"],
                     provided_summary=article["provided_summary"],
-                    generated_summary="", #TODO: AI COMPLETION HERE
+                    generated_summary="",  # TODO: AI COMPLETION HERE
                     media_preview=create_or_get_media(article["media_preview"]),
                     content=article["content"],
                     category=create_or_get_category(article["category"])
                 )
+                new_article.save()
 
                 # Add tags
                 for tag_title in article["tags"]:
@@ -149,6 +176,7 @@ def periodicUpdate():
                     new_article.tags.add(tag)
 
                 new_article.save()
+                logger.debug("New article created.")
 
 
 ####################

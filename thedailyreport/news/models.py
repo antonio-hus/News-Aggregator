@@ -28,7 +28,7 @@ class Media(models.Model):
 
     # Media Defined by its URL
     # TODO: Improvement => Save Medias to Database ( for persistence )
-    url = models.URLField(max_length=512)
+    url = models.URLField(max_length=1024)
 
     def __str__(self):
         return self.url
