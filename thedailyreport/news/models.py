@@ -28,7 +28,7 @@ class Media(models.Model):
 
     # Media Defined by its URL
     # TODO: Improvement => Save Medias to Database ( for persistence )
-    url = models.URLField()
+    url = models.URLField(max_length=512)
 
     def __str__(self):
         return self.url
@@ -47,9 +47,8 @@ class Category(models.Model):
 # Tag Class
 class Tag(models.Model):
 
-    # Tag is defined by its name and category
+    # Tag is defined by its name
     title = models.CharField(max_length=64)
-    categories = models.ManyToManyField(to=Category, related_name="categorized_tags")
 
     def __str__(self):
         return self.title
@@ -81,11 +80,11 @@ class Article(models.Model):
     title_hash = models.CharField(max_length=64)
     content_hash = models.CharField(max_length=64)
     media_hash = models.CharField(max_length=64, blank=True, null=True)
-    publish_date = models.DateTimeField()
-    last_updated_date = models.DateTimeField()
+    publish_date = models.CharField(max_length=64)
+    last_updated_date = models.CharField(max_length=64)
     publisher = models.ForeignKey(to=NewsSource, on_delete=models.CASCADE, related_name="articles")
     tags = models.ManyToManyField(to=Tag, related_name="tagged_articles")
-    categories = models.ManyToManyField(to=Category, related_name="categorized_articles")
+    category = models.ForeignKey(to=Category, on_delete=models.CASCADE, related_name="categorized_articles")
 
     # Article Information
     title = models.CharField(max_length=256)
@@ -93,7 +92,6 @@ class Article(models.Model):
     generated_summary = models.TextField()
     content = models.TextField()
     media_preview = models.ForeignKey(to=Media, on_delete=models.PROTECT, related_name="preview_media")
-    medias_full = models.ManyToManyField(to=Media, related_name="full_medias")
     writer = models.CharField(max_length=128)
 
     # User Interactions
@@ -126,4 +124,4 @@ class Article(models.Model):
         self.read_later_by.remove(user)
 
     def __str__(self):
-        return self.title_preview
+        return self.title

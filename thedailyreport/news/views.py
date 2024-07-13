@@ -8,6 +8,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.core import serializers
 
 # Rest Framework Defined
 from rest_framework.decorators import api_view
@@ -16,7 +17,7 @@ from rest_framework.permissions import IsAuthenticated
 
 # User Defined
 from .models import User, Media, Category, Tag, NewsSource, Article
-from .web_scrapers import DIGI24
+from .utils import periodicUpdate
 
 
 #######################
@@ -43,8 +44,11 @@ def get_user(request):
 
 @api_view(['GET'])
 def get_all_news(request):
+    periodicUpdate()
+    articles = Article.objects.all()
+    articles_json = serializers.serialize('json', articles)
     return Response({
-        "article_list": Article.objects.all()
+        "article_list": articles_json,
     })
 
 

@@ -7,15 +7,15 @@ from .models import User, Media, Category, Tag, NewsSource, Article
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
     list_display = ('title', 'publish_date', 'publisher', 'likes_count', 'favorite_count')
-    list_filter = ('publish_date', 'publisher', 'tags', 'categories')
+    list_filter = ('publish_date', 'publisher', 'tags', 'category')
     search_fields = ('title', 'content', 'writer')
-    filter_horizontal = ('tags', 'categories', 'medias_full', 'liked_by', 'favorited_by', 'read_later_by')
+    filter_horizontal = ('tags', 'liked_by', 'favorited_by', 'read_later_by')
 
     def likes_count(self, obj):
-        return obj.liked_by.count()
+        return obj.likes_count()
 
     def favorite_count(self, obj):
-        return obj.favorited_by.count()
+        return obj.favorite_count()
 
 
 # Model Registration
