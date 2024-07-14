@@ -1,6 +1,7 @@
 ###################
 # IMPORTS SECTION #
 ###################
+import datetime
 
 # Django Defined
 from django.contrib.auth import authenticate, login, logout
@@ -9,6 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.core import serializers
+
 
 # Rest Framework Defined
 from rest_framework.decorators import api_view
@@ -44,7 +46,6 @@ def get_user(request):
 
 @api_view(['GET'])
 def get_all_news(request):
-    periodicUpdate()
     articles = Article.objects.all()
     articles_json = serializers.serialize('json', articles)
     return Response({

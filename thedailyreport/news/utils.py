@@ -8,9 +8,10 @@ from datetime import datetime, timedelta
 import logging
 # Django Libraries
 from django.utils import timezone
+from django.db import transaction
 # User Defined
 from .web_scrapers import DIGI24
-from .models import User, Media, Category, Tag, NewsSource, Article
+from .models import Media, Category, Tag, NewsSource, Article
 
 ###################
 # LOGGING ACTIONS #
@@ -23,6 +24,7 @@ file_handler = logging.FileHandler('periodic_update.log')
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
+
 
 ###########################
 # WEB SCRAPERS OPERATIONS #
@@ -68,7 +70,8 @@ def create_or_get_publisher(name):
 
 
 # Periodic Update of Articles in DataBase
-# To be called every 12 hours ( at usual down-times )
+# To be called every 8 hours ( at usual down-times )
+@transaction.atomic
 def periodicUpdate():
     """
     Functionality:
