@@ -2,64 +2,67 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import './NewsFeed.css'
 
-function NewsFeed() {
+function ArticleFeed({ endpoint, title }) {
     const [articles, setArticles] = useState([]);
     const [sortedArticles, setSortedArticles] = useState([]);
     const [sortOption, setSortOption] = useState("");
     const [sortOrder, setSortOrder] = useState("asc");
 
     useEffect(() => {
-        // Fetch articles from Django API
-        axios.get('http://localhost:8000/api/articles_all/')
-            .then(response => {
-                // Update state with articles from API response
-                setArticles(response.data);
-                setSortedArticles(response.data); // Initialize sorted articles
-            })
-            .catch(error => {
-                console.error('Error fetching articles:', error);
-            });
+        fetchAndSortArticles(endpoint);
     }, []);
 
     useEffect(() => {
         sortArticles();
     }, [sortOption, sortOrder, articles]);
 
+    const fetchAndSortArticles = (endpoint) => {
+        axios.get(endpoint)
+            .then(response => {
+                setArticles(response.data);
+                setSortedArticles(response.data); // Initialize sorted articles
+            })
+            .catch(error => {
+                console.error('Error fetching articles:', error);
+            });
+    };
+
     const sortArticles = () => {
         let sorted = [...articles];
 
         if (sortOption === "title") {
             sorted.sort((a, b) => {
-                if (a.title < b.title) return sortOrder === "asc" ? -1 : 1;
-                if (a.title > b.title) return sortOrder === "asc" ? 1 : -1;
-                return 0;
+                return sortOrder === "asc" ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
             });
         } else if (sortOption === "publish_date") {
             sorted.sort((a, b) => {
-                if (new Date(a.publish_date) < new Date(b.publish_date)) return sortOrder === "asc" ? -1 : 1;
-                if (new Date(a.publish_date) > new Date(b.publish_date)) return sortOrder === "asc" ? 1 : -1;
-                return 0;
+                return sortOrder === "asc" ? new Date(a.publish_date) - new Date(b.publish_date) : new Date(b.publish_date) - new Date(a.publish_date);
             });
         } else if (sortOption === "category") {
             sorted.sort((a, b) => {
-                if (a.category.title < b.category.title) return sortOrder === "asc" ? -1 : 1;
-                if (a.category.title > b.category.title) return sortOrder === "asc" ? 1 : -1;
-                return 0;
+                return sortOrder === "asc" ? a.category.title.localeCompare(b.category.title) : b.category.title.localeCompare(a.category.title);
             });
         } else if (sortOption === "publisher") {
             sorted.sort((a, b) => {
-                if (a.publisher < b.publisher) return sortOrder === "asc" ? -1 : 1;
-                if (a.publisher > b.publisher) return sortOrder === "asc" ? 1 : -1;
-                return 0;
+                return sortOrder === "asc" ? a.publisher.name.localeCompare(b.publisher.name) : b.publisher.name.localeCompare(a.publisher.name);
             });
         }
 
         setSortedArticles(sorted);
     };
 
+    if (articles.length === 0) {
+        return (
+            <>
+                <h2 style={{ margin: '30px' }}>{title}</h2>
+                <p style={{ margin: '30px' }}>There is nothing to show here!</p>
+            </>
+        );
+    }
+
     return (
         <div id="news-feed" className="container">
-            <h2>Discover Recent Articles:</h2>
+            <h2>{title}</h2>
             <br/>
             <div className="sort-options mb-4">
                 <div className="row">
@@ -122,4 +125,12 @@ function NewsFeed() {
     );
 }
 
-export default NewsFeed;
+function NewsFeed() {
+    return <ArticleFeed endpoint="http://localhost:8000/api/articles_all/" title="Discover Recent Articles:" />;
+}
+
+function FollowingFeed() {
+    return <ArticleFeed endpoint="http://localhost:8000/api/articles_following/" title="From your Favourite News Sources:" />;
+}
+
+export {NewsFeed, FollowingFeed};

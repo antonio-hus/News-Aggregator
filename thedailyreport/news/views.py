@@ -21,7 +21,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 
 # User Defined
 from .models import User, Media, Category, Tag, NewsSource, Article
-from .serializers import ArticleSerializer
+from .serializers import ArticleSerializer, NewsSourceSerializer
 
 
 #######################
@@ -66,7 +66,7 @@ def get_all_news(request):
     if tag_title:
         try:
             tag = Tag.objects.get(title=tag_title)
-            articles = articles.filter(tags__title=tag_title)  # Use double underscore for ManyToMany field lookup
+            articles = articles.filter(tags__title=tag_title)
         except Tag.DoesNotExist:
             return Response({"error": f"Tag '{tag_title}' does not exist."}, status=404)
 
@@ -103,13 +103,14 @@ def get_following_news(request):
         except Tag.DoesNotExist:
             return Response({"error": f"Tag '{tag_title}' does not exist."}, status=404)
 
-    articles_json = serializers.serialize('json', articles)
+    articles_json = ArticleSerializer(articles, many=True)
     return Response({
-        "article_list": articles_json,
+        "article_list": articles_json.data,
     })
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def get_publisher_news(request, name: str):
     try:
         publisher = NewsSource.objects.get(name=name)
@@ -117,14 +118,17 @@ def get_publisher_news(request, name: str):
         return Response({"error": f"Publisher '{name}' does not exist."}, status=404)
 
     articles = Article.objects.filter(publisher=publisher)
-    articles_json = serializers.serialize('json', articles)
 
+    articles_json = ArticleSerializer(articles, many=True)
+    publisher_json = NewsSourceSerializer(publisher)
     return Response({
-        "article_list": articles_json,
+        "publisher": publisher_json.data,
+        "article_list": articles_json.data,
     })
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def get_category_news(request, title: str):
     try:
         category = Category.objects.get(title=title)
@@ -140,6 +144,7 @@ def get_category_news(request, title: str):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def get_tagged_news(request, title: str):
     try:
         tag = Tag.objects.get(title=title)
