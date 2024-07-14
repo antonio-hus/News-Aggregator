@@ -13,9 +13,11 @@ from django.core import serializers
 
 
 # Rest Framework Defined
-from rest_framework.decorators import api_view
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 
 # User Defined
 from .models import User, Media, Category, Tag, NewsSource, Article
@@ -27,6 +29,7 @@ from .serializers import ArticleSerializer
 #######################
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def get_user(request):
     user = request.user
     if user.is_authenticated:
@@ -36,7 +39,7 @@ def get_user(request):
         })
     return Response({
         'is_authenticated': False,
-        'username': 'N/A',
+        'username': '',
     })
 
 
@@ -45,6 +48,7 @@ def get_user(request):
 ##########################
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def get_all_news(request):
     articles = Article.objects.all()
 
@@ -72,6 +76,7 @@ def get_all_news(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_following_news(request):
     # Get the current user & news sources that the user follows
     user = request.user
@@ -154,42 +159,39 @@ def get_tagged_news(request, title: str):
 ############################
 
 @api_view(['POST'])
-def login_view(request):
-    # Attempt to sign user in
-    username = request.data.get("username")
-    password = request.data.get("password")
-    user = authenticate(request, username=username, password=password)
+@permission_classes([AllowAny])
+def register(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
 
-    # Check if authentication successful
-    if user is not None:
-        login(request, user)
-        return Response({"message": "Login successful."})
+    if username and password:
+        if User.objects.filter(username=username).exists():
+            return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.create_user(username=username, password=password)
+        token = Token.objects.create(user=user)
+        return Response({'token': token.key}, status=status.HTTP_201_CREATED)
     else:
-        return Response({"message": "Invalid username and/or password."}, status=400)
+        return Response({'error': 'Username and password are required'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
+def login_view(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    user = authenticate(username=username, password=password)
+
+    if user is not None:
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key}, status=status.HTTP_200_OK)
+    else:
+        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def logout_view(request):
     logout(request)
-    return Response({"message": "Logged out successfully."})
-
-
-@api_view(['POST'])
-def register(request):
-    username = request.data.get("username")
-    email = request.data.get("email")
-
-    # Ensure password matches confirmation
-    password = request.data.get("password")
-    confirmation = request.data.get("confirmation")
-    if password != confirmation:
-        return Response({"message": "Passwords must match."}, status=400)
-
-    # Attempt to create new user
-    try:
-        user = User.objects.create_user(username, email, password)
-        user.save()
-    except IntegrityError:
-        return Response({"message": "Username already taken."}, status=400)
-    login(request, user)
-    return Response({"message": "Registration successful."})
+    return Response({'message': 'Logged out successfully'}, status=status.HTTP_200_OK)

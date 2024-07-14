@@ -20,17 +20,24 @@ function App() {
     };
 
     useEffect(() => {
-        axios.get('http://localhost:8000/api/user/')
-            .then(response => {
-                setUser({
-                    isAuthenticated: response.data.is_authenticated,
-                    username: response.data.username
-                });
-            })
-            .catch(error => {
-                console.error('There was an error fetching the user data!', error);
+    const token = localStorage.getItem('token');
+    if (token) {
+        axios.get('http://localhost:8000/api/user/', {
+            headers: {
+                'Authorization': `Token ${token}`
+            }
+        })
+        .then(response => {
+            setUser({
+                isAuthenticated: response.data.is_authenticated,
+                username: response.data.username
             });
-    }, []);
+        })
+        .catch(error => {
+            console.error('There was an error fetching the user data!', error);
+        });
+    }
+}, []);
 
     return (
         <Router>

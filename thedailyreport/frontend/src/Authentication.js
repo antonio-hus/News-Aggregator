@@ -4,60 +4,66 @@ import axios from 'axios';
 const Login = ({ setUser }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [message, setMessage] = useState('');
 
-    const handleLogin = async (e) => {
+    const handleLogin = (e) => {
         e.preventDefault();
-        try {
-            const response = await axios.post('http://localhost:8000/api/login/', {
-                username,
-                password
+        axios.post('http://localhost:8000/api/login/', { username, password })
+            .then(response => {
+                const token = response.data.token;
+                localStorage.setItem('token', token);
+                setUser({
+                    isAuthenticated: true,
+                    username: username
+                });
+            })
+            .catch(error => {
+                console.error('Login error:', error);
             });
-            setUser({
-                isAuthenticated: true,
-                username: response.data.username
-            });
-        } catch (error) {
-            setMessage('Invalid username and/or password.');
-        }
     };
 
     return (
-        <div>
+        <>
             <h2 style={{ margin: '20px' }}>Login</h2>
-            {message && <div>{message}</div>}
             <form onSubmit={handleLogin}>
-                <div className="form-group">
-                    <input className="form-control" style={{ margin: '20px' }} type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" required />
+                <div className="form-group" style={{ margin: '20px' }}>
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="form-control" style={{ margin: '20px' }}
+                    />
                 </div>
-                <div className="form-group">
-                    <input className="form-control" style={{ margin: '20px' }} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required />
+                <div className="form-group" style={{ margin: '20px' }}>
+                <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="form-control" style={{ margin: '20px' }}
+                />
                 </div>
                 <button className="btn btn-primary" style={{ margin: '20px' }} type="submit">Login</button>
             </form>
-            <p style={{ margin: '20px' }}>Don't have an account? <a href="/register">Register here.</a></p>
-        </div>
+        </>
     );
 };
 
 const Logout = ({ setUser }) => {
-    const handleLogout = async () => {
-        try {
-            await axios.post('http://localhost:8000/api/logout/');
-            setUser({
-                isAuthenticated: false,
-                username: ''
-            });
-        } catch (error) {
-            console.error('Logout error:', error);
-        }
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        setUser({
+            isAuthenticated: false,
+            username: ''
+        });
     };
 
     return (
-        <div>
+        <>
             <h2 style={{ margin: '20px' }}>Logout</h2>
+            <p style={{ margin: '20px' }}>Are you sure you want to logout?</p>
             <button className="btn btn-primary" style={{ margin: '20px' }} onClick={handleLogout}>Logout</button>
-        </div>
+        </>
     );
 };
 
@@ -82,12 +88,13 @@ const Register = ({ setUser }) => {
                 password,
                 confirmation
             });
+            localStorage.setItem('token', response.data.token);
             setUser({
                 isAuthenticated: true,
                 username: response.data.username
             });
         } catch (error) {
-            setMessage('Username already taken.');
+            setMessage('Username or email already taken.');
         }
     };
 
