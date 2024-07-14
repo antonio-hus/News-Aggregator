@@ -58,6 +58,7 @@ def get():
                 "content_hash": hashlib.sha256(article_data["content"].encode   ('utf-8')).hexdigest(),
                 "media_hash": hashlib.sha256(img_elem.encode('utf-8')).hexdigest(),
                 "publisher": publisher,
+                "url": url_elem,
                 "writer": article_data["writer"],
                 "publish_date": article_data["publish_date"],
                 "last_updated_date": article_data["last_updated_date"],

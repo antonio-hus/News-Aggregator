@@ -82,6 +82,7 @@ class Article(models.Model):
     media_hash = models.CharField(max_length=64, blank=True, null=True)
     publish_date = models.CharField(max_length=64)
     last_updated_date = models.CharField(max_length=64)
+    url = models.URLField()
     publisher = models.ForeignKey(to=NewsSource, on_delete=models.CASCADE, related_name="articles")
     tags = models.ManyToManyField(to=Tag, related_name="tagged_articles")
     category = models.ForeignKey(to=Category, on_delete=models.CASCADE, related_name="categorized_articles")

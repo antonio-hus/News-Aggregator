@@ -19,6 +19,7 @@ from rest_framework.permissions import IsAuthenticated
 
 # User Defined
 from .models import User, Media, Category, Tag, NewsSource, Article
+from .serializers import ArticleSerializer
 
 
 #######################
@@ -61,14 +62,13 @@ def get_all_news(request):
     if tag_title:
         try:
             tag = Tag.objects.get(title=tag_title)
-            articles = articles.filter(tags=tag)
+            articles = articles.filter(tags__title=tag_title)  # Use double underscore for ManyToMany field lookup
         except Tag.DoesNotExist:
             return Response({"error": f"Tag '{tag_title}' does not exist."}, status=404)
 
-    articles_json = serializers.serialize('json', articles)
-    return Response({
-        "article_list": articles_json,
-    })
+    # Serialize queryset using DRF serializer
+    serializer = ArticleSerializer(articles, many=True)
+    return Response(serializer.data)
 
 
 @api_view(['GET'])

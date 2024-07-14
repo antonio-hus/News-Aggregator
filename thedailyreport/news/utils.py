@@ -55,6 +55,9 @@ def create_or_get_category(title):
 
 
 def create_or_get_tag(title):
+    """
+    Creates new Tag(s) or retrieves existing one(s) by title.
+    """
     tag, created = Tag.objects.get_or_create(title=title)
     return tag
 
@@ -163,6 +166,7 @@ def periodicUpdate():
                     publish_date=article["publish_date"],
                     last_updated_date=article["last_updated_date"],
                     publisher=article["publisher"],
+                    url=article["url"],
                     writer=article["writer"],
                     title=article["title"],
                     provided_summary=article["provided_summary"],
