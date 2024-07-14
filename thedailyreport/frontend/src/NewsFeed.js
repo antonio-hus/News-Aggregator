@@ -103,10 +103,10 @@ function NewsFeed() {
                                 hour: '2-digit', minute: '2-digit',
                             })}</small></p>
                             <div className="mb-2">
-                                <strong>Category:</strong> {article.category ? article.category.title : 'Uncategorized'}
+                                <strong>Publisher:</strong> {article.publisher ? article.publisher.name : 'Unknown Publisher'}
                             </div>
                             <div className="mb-2">
-                                <strong>Publisher:</strong> {article.publisher ? article.publisher.name : 'Unknown Publisher'}
+                                <strong>Category:</strong> {article.category ? article.category.title : 'Uncategorized'}
                             </div>
                             <div className="mb-2">
                                 <strong>Tags:</strong> {article.tags.map(tag => (
