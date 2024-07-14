@@ -10,6 +10,10 @@ urlpatterns = [
 
     # Articles Related Endpoints
     path('articles_all/', views.get_all_news, name='get_articles_all'),
+    path('articles_following/', views.get_following_news, name='get_articles_following'),
+    path('articles_publisher/<name:str>', views.get_publisher_news, name='get_articles_publisher'),
+    path('articles_category/<title:str>', views.get_category_news, name='get_articles_category'),
+    path('articles_tag/<title:str>', views.get_tagged_news, name='get_articles_tag'),
 
     # Authentication Endpoints
     path('login/', views.login_view, name="login"),
