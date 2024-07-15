@@ -5,30 +5,54 @@ import ArticleFeed from "../Articles/ArticleFeed";
 import NotFound from "../ErrorScreens/404Page";
 import './PublisherProfile.css';
 
+function isAuthenticated() {
+    const token = localStorage.getItem('token');
+    return token && token !== "";
+}
+
 const PublisherProfile = () => {
     const { name } = useParams();
     const [publisher, setPublisher] = useState(null);
     const [isFollowing, setIsFollowing] = useState(false);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        axios.get(`http://localhost:8000/api/publisher/${name}/`)
-            .then(response => {
-                setPublisher(response.data.publisher);
-                setIsFollowing(response.data.is_following);
-                setIsAuthenticated(response.data.is_authenticated)
+        const token = localStorage.getItem('token');
+        if (token && token !== ""){
+            axios.get(`http://localhost:8000/api/publisher/${name}/`, {
+                headers: {
+                    'Authorization': `Token ${token}`
+                }
             })
-            .catch(error => {
-                console.error('There was an error fetching the publisher data!', error);
-            });
+                .then(response => {
+                    setPublisher(response.data.publisher);
+                    setIsFollowing(response.data.is_following);
+                })
+                .catch(error => {
+                    console.error('There was an error fetching the publisher data!', error);
+                });
+        } else {
+            axios.get(`http://localhost:8000/api/publisher/${name}/`)
+                .then(response => {
+                    setPublisher(response.data.publisher);
+                    setIsFollowing(response.data.is_following);
+                })
+                .catch(error => {
+                    console.error('There was an error fetching the publisher data!', error);
+                });
+        }
     }, [name]);
 
     const handleFollowToggle = () => {
+        const token = localStorage.getItem('token');
         const url = isFollowing
             ? `http://localhost:8000/api/publisher/${name}/unfollow/`
             : `http://localhost:8000/api/publisher/${name}/follow/`;
 
-        axios.post(url)
+        axios.post(url, {}, {
+                headers: {
+                    'Authorization': `Token ${token}`
+                }
+            })
             .then(response => {
                 setIsFollowing(!isFollowing);
             })
@@ -44,7 +68,7 @@ const PublisherProfile = () => {
             <div className="card mb-5">
                 <div className="card-header d-flex justify-content-between align-items-center">
                     <h2>{publisher.name}</h2>
-                    {isAuthenticated && (
+                    {isAuthenticated() && (
                         <button
                             className={`btn ${isFollowing ? 'btn-danger' : 'btn-success'}`}
                             onClick={handleFollowToggle}
