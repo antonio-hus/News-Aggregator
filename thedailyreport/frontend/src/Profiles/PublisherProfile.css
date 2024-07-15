@@ -1,0 +1,12 @@
+.publisher-profile .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.publisher-profile .card-body p {
+    margin-bottom: 0.5rem;
+}
+
+.publisher-profile .btn {
+    min-width: 100px;
+}

@@ -8,7 +8,7 @@ const Sidebar = ({ user, isOpen, toggleSidebar }) => (
             <ul className="nav flex-column align-items-center"> {/* Center items vertically */}
                 {user.isAuthenticated && (
                     <li className="nav-item">
-                        <Link className="nav-link d-flex align-items-center" to="/user">
+                        <Link className="nav-link d-flex align-items-center" to="/profile">
                             <i className="bi bi-person me-2 fs-5"></i> {isOpen && user.username}
                         </Link>
                     </li>
@@ -20,21 +20,21 @@ const Sidebar = ({ user, isOpen, toggleSidebar }) => (
                 </li>
                 {user.isAuthenticated && (
                 <li className="nav-item">
-                    <Link className="nav-link d-flex align-items-center" to="/">
+                    <Link className="nav-link d-flex align-items-center" to="/following">
                         <i className="bi bi-broadcast me-2 fs-5"></i> {isOpen && 'Following Articles'}
                     </Link>
                 </li>
                 )}
                 {user.isAuthenticated && (
                 <li className="nav-item">
-                    <Link className="nav-link d-flex align-items-center" to="/">
+                    <Link className="nav-link d-flex align-items-center" to="/favorite">
                         <i className="bi bi-heart me-2 fs-5"></i> {isOpen && 'Favorite Articles'}
                     </Link>
                 </li>
                 )}
                 {user.isAuthenticated && (
                 <li className="nav-item">
-                    <Link className="nav-link d-flex align-items-center" to="/">
+                    <Link className="nav-link d-flex align-items-center" to="/read-later">
                         <i className="bi bi-clock me-2 fs-5"></i> {isOpen && 'Read Later Articles'}
                     </Link>
                 </li>

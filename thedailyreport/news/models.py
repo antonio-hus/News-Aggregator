@@ -15,6 +15,13 @@ class User(AbstractUser):
     Adds a follow method to a News Source
     """
 
+    date_of_birth = models.DateField(null=True, blank=True)
+    address = models.CharField(max_length=255, blank=True)
+    phone_number = models.CharField(max_length=20, blank=True)
+    gender = models.CharField(max_length=10, blank=True)
+    biography = models.TextField(blank=True)
+    social_media_links = models.CharField(max_length=255, blank=True)
+
     followed_news_sources = models.ManyToManyField('NewsSource', related_name='followers')
 
     def follow(self, news_source):

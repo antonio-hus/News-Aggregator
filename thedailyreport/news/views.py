@@ -5,6 +5,7 @@ import datetime
 
 # Django Defined
 from django.contrib.auth import authenticate, login, logout
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
@@ -21,7 +22,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 
 # User Defined
 from .models import User, Media, Category, Tag, NewsSource, Article
-from .serializers import ArticleSerializer, NewsSourceSerializer
+from .serializers import ArticleSerializer, NewsSourceSerializer, UserProfileSerializer, UserSerializer
 
 
 #######################
@@ -41,6 +42,25 @@ def get_user(request):
         'is_authenticated': False,
         'username': '',
     })
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_data(request):
+    user = request.user
+    serializer = UserProfileSerializer(user)
+    return Response(serializer.data)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_user_data(request):
+    user = request.user
+    serializer = UserProfileSerializer(user, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)
 
 
 ##########################
@@ -71,7 +91,7 @@ def get_all_news(request):
             return Response({"error": f"Tag '{tag_title}' does not exist."}, status=404)
 
     # Serialize queryset using DRF serializer
-    serializer = ArticleSerializer(articles, many=True)
+    serializer = ArticleSerializer(articles, many=True, context={'request': request})
     return Response(serializer.data)
 
 
@@ -99,14 +119,77 @@ def get_following_news(request):
     if tag_title:
         try:
             tag = Tag.objects.get(title=tag_title)
-            articles = articles.filter(tags=tag)
+            articles = articles.filter(tags__title=tag_title)
         except Tag.DoesNotExist:
             return Response({"error": f"Tag '{tag_title}' does not exist."}, status=404)
 
-    articles_json = ArticleSerializer(articles, many=True)
-    return Response({
-        "article_list": articles_json.data,
-    })
+    # Serialize queryset using DRF serializer
+    serializer = ArticleSerializer(articles, many=True, context={'request': request})
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_read_later_news(request):
+    try:
+        user = request.user
+        articles = Article.objects.filter(read_later_by=user)
+
+        # Optional filters
+        category_title = request.query_params.get('category')
+        tag_title = request.query_params.get('tag')
+
+        if category_title:
+            try:
+                category = Category.objects.get(title=category_title)
+                articles = articles.filter(category=category)
+            except Category.DoesNotExist:
+                return Response({"error": f"Category '{category_title}' does not exist."}, status=404)
+
+        if tag_title:
+            try:
+                tag = Tag.objects.get(title=tag_title)
+                articles = articles.filter(tags__title=tag_title)
+            except Tag.DoesNotExist:
+                return Response({"error": f"Tag '{tag_title}' does not exist."}, status=404)
+
+        serializer = ArticleSerializer(articles, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    except ObjectDoesNotExist as e:
+        return Response({"error": str(e)}, status=404)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_favorite_news(request):
+    try:
+        user = request.user
+        articles = Article.objects.filter(favorited_by=user)
+
+        # Optional filters
+        category_title = request.query_params.get('category')
+        tag_title = request.query_params.get('tag')
+
+        if category_title:
+            try:
+                category = Category.objects.get(title=category_title)
+                articles = articles.filter(category=category)
+            except Category.DoesNotExist:
+                return Response({"error": f"Category '{category_title}' does not exist."}, status=404)
+
+        if tag_title:
+            try:
+                tag = Tag.objects.get(title=tag_title)
+                articles = articles.filter(tags__title=tag_title)
+            except Tag.DoesNotExist:
+                return Response({"error": f"Tag '{tag_title}' does not exist."}, status=404)
+
+        serializer = ArticleSerializer(articles, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    except ObjectDoesNotExist as e:
+        return Response({"error": str(e)}, status=404)
 
 
 @api_view(['GET'])
@@ -118,12 +201,32 @@ def get_publisher_news(request, name: str):
         return Response({"error": f"Publisher '{name}' does not exist."}, status=404)
 
     articles = Article.objects.filter(publisher=publisher)
+    serializer = ArticleSerializer(articles, many=True, context={'request': request})
+    return Response(serializer.data)
 
-    articles_json = ArticleSerializer(articles, many=True)
-    publisher_json = NewsSourceSerializer(publisher)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def get_publisher_data(request, name: str):
+    try:
+        publisher = NewsSource.objects.get(name=name)
+    except NewsSource.DoesNotExist:
+        return Response({"error": f"Publisher '{name}' does not exist."}, status=404)
+
+    # Serialize the publisher data
+    serializer_context = {'request': request}
+    publisher_json = NewsSourceSerializer(publisher, context=serializer_context)
+
+    # Check if user is authenticated and add follow status
+    follow_status = False
+    if request.user.is_authenticated:
+        follow_status = request.user.is_following(publisher)
+
+    # Return response with publisher data and follow status
     return Response({
         "publisher": publisher_json.data,
-        "article_list": articles_json.data,
+        "is_following": follow_status,
+        "is_authenticated": request.user.is_authenticated,
     })
 
 
@@ -136,11 +239,8 @@ def get_category_news(request, title: str):
         return Response({"error": f"Category '{title}' does not exist."}, status=404)
 
     articles = Article.objects.filter(category=category)
-    articles_json = serializers.serialize('json', articles)
-
-    return Response({
-        "article_list": articles_json,
-    })
+    serializer = ArticleSerializer(articles, many=True, context={'request': request})
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
@@ -152,11 +252,88 @@ def get_tagged_news(request, title: str):
         return Response({"error": f"Tag '{title}' does not exist."}, status=404)
 
     articles = Article.objects.filter(tags=tag)
-    articles_json = serializers.serialize('json', articles)
+    serializer = ArticleSerializer(articles, many=True, context={'request': request})
+    return Response(serializer.data)
 
-    return Response({
-        "article_list": articles_json,
-    })
+
+##############################
+# USER INTERACTION ENDPOINTS #
+##############################
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def favorite_article(request, articleId):
+    try:
+        article = Article.objects.get(id=articleId)
+        user = request.user
+        article.favorite(user)
+        return Response({"message": f"User - {user.username} favorited article with id - {articleId}."})
+
+    except Article.DoesNotExist:
+        return Response({"error": f"Article with id - '{articleId}' does not exist."}, status=404)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def unfavorite_article(request, articleId):
+    try:
+        article = Article.objects.get(id=articleId)
+        user = request.user
+        article.unfavorite(user)
+        return Response({"message": f"User - {user.username} unfavorited article with id - {articleId}."})
+
+    except Article.DoesNotExist:
+        return Response({"error": f"Article with id - '{articleId}' does not exist."}, status=404)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def readlater_article(request, articleId):
+    try:
+        article = Article.objects.get(id=articleId)
+        user = request.user
+        article.read_later(user)
+        return Response({"message": f"User - {user.username} read later article with id - {articleId}."})
+
+    except Article.DoesNotExist:
+        return Response({"error": f"Article with id - '{articleId}' does not exist."}, status=404)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def unreadlater_article(request, articleId):
+    try:
+        article = Article.objects.get(id=articleId)
+        user = request.user
+        article.unread_later(user)
+        return Response({"message": f"User - {user.username} unread later article with id - {articleId}."})
+
+    except Article.DoesNotExist:
+        return Response({"error": f"Article with id - '{articleId}' does not exist."}, status=404)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def follow_publisher(request, name):
+    try:
+        publisher = NewsSource.objects.get(name=name)
+        user = request.user
+        user.follow(publisher)
+        return Response({"message": f"You followed {publisher.name}."})
+    except NewsSource.DoesNotExist:
+        return Response({"error": f"Publisher '{name}' does not exist."}, status=404)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def unfollow_publisher(request, name):
+    try:
+        publisher = NewsSource.objects.get(name=name)
+        user = request.user
+        user.unfollow(publisher)
+        return Response({"message": f"You unfollowed {publisher.name}."})
+    except NewsSource.DoesNotExist:
+        return Response({"error": f"Publisher '{name}' does not exist."}, status=404)
 
 
 ############################
