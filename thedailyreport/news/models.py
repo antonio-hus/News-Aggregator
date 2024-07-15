@@ -93,16 +93,16 @@ class Article(models.Model):
     media_hash = models.CharField(max_length=64, blank=True, null=True)
     publish_date = models.CharField(max_length=64)
     last_updated_date = models.CharField(max_length=64)
-    url = models.URLField()
+    url = models.URLField(max_length=1024)
     publisher = models.ForeignKey(to=NewsSource, on_delete=models.CASCADE, related_name="articles")
     tags = models.ManyToManyField(to=Tag, related_name="tagged_articles")
     category = models.ForeignKey(to=Category, on_delete=models.CASCADE, related_name="categorized_articles")
 
     # Article Information
     title = models.CharField(max_length=256)
-    provided_summary = models.TextField()
-    generated_summary = models.TextField()
-    content = models.TextField()
+    provided_summary = models.TextField(max_length=2048)
+    generated_summary = models.TextField(max_length=2048)
+    content = models.TextField(max_length=5096)
     media_preview = models.ForeignKey(to=Media, on_delete=models.PROTECT, related_name="preview_media")
     writer = models.CharField(max_length=128)
 

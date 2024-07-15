@@ -10,7 +10,7 @@ import logging
 from django.utils import timezone
 from django.db import transaction
 # User Defined
-from .web_scrapers import DIGI24
+from .web_scrapers import DIGI24, BIHON, HOTNEWS, PROTV, ZIARULDECLUJ
 from .models import Media, Category, Tag, NewsSource, Article
 
 ###################
@@ -39,6 +39,7 @@ def getArticles():
 
     article_list = []
     article_list.append(DIGI24.scrape_news.get())
+    article_list.append(BIHON.scrape_news.get())
 
     return article_list
 
