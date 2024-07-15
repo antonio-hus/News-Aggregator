@@ -85,6 +85,17 @@ def search_articles(request):
     serializer = ArticleSerializer(articles, many=True, context={'request': request})
     return Response(serializer.data)
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def get_article(request, articleId: int):
+    article = Article.objects.get(id=articleId)
+
+    # Serialize article using DRF serializer
+    serializer = ArticleSerializer(article, context={'request': request})
+    return Response(serializer.data)
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticatedOrReadOnly])
 def get_all_news(request):

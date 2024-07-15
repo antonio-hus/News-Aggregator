@@ -251,7 +251,7 @@ function ArticleFeed({ endpoint, title, permission }) {
                                     ))}
                                 </div>
                                 <a href={article.url} className="btn btn-outline-primary" style={{marginRight:'5px'}}>Source</a>
-                                <a href="/" className="btn btn-primary">Read More</a>
+                                <a href={`/articles/${article.id}`} className="btn btn-primary">Read More</a>
                                 { isAuthenticated() && (
                                     <div className="article-actions">
                                         { article.is_favorited ? (

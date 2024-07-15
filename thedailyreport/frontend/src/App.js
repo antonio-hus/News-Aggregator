@@ -12,6 +12,7 @@ import Sidebar from './WebComponents/Sidebar';
 import Disclaimer from "./WebComponents/Disclaimer";
 
 import './App.css';
+import ArticleScreen from "./Articles/ArticleScreen";
 
 
 function App() {
@@ -68,6 +69,7 @@ function App() {
 
 
                             <Route key="home" exact path="/" element={<NewsFeed />} />
+                            <Route key="article" path="/articles/:articleId" element={<ArticleScreen />} />
 
 
                             <Route key="user_profile" exact path="/profile" element={<UserProfile />} />
