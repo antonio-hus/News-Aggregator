@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
-import './ArticleFeed.css'
+import './ArticleFeed.css';
 import {Link} from "react-router-dom";
 
 function isAuthenticated() {

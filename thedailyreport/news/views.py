@@ -11,6 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.core import serializers
+from django.db.models import Q
 
 
 # Rest Framework Defined
@@ -66,6 +67,23 @@ def update_user_data(request):
 ##########################
 # ARTICLE INFO ENDPOINTS #
 ##########################
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def search_articles(request):
+    query = request.GET.get('q', '')
+    if query:
+        articles = Article.objects.filter(
+            Q(title__icontains=query) |
+            Q(tags__title__icontains=query) |
+            Q(category__title__icontains=query)
+        ).distinct()
+    else:
+        articles = Article.objects.none()
+
+    # Serialize queryset using DRF serializer
+    serializer = ArticleSerializer(articles, many=True, context={'request': request})
+    return Response(serializer.data)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticatedOrReadOnly])

@@ -4,12 +4,15 @@ import axios from 'axios';
 
 import NotFound from './ErrorScreens/404Page';
 import UserProfile from "./Profiles/UserProfile";
+import SearchPage from "./Articles/SearchPage";
 import {NewsFeed, FollowingFeed, FavoriteFeed, ReadLaterFeed, CategoryFeed, TagFeed} from './Articles/NewsFeed';
 import PublisherProfile from './Profiles/PublisherProfile';
 import { Login, Logout, Register } from './Authentication';
-import Sidebar from './Sidebar';
+import Sidebar from './WebComponents/Sidebar';
+import Disclaimer from "./WebComponents/Disclaimer";
 
 import './App.css';
+
 
 function App() {
     const [user, setUser] = useState({
@@ -56,23 +59,38 @@ function App() {
 
     return (
         <Router>
+            <Disclaimer />
             <div className="container-fluid">
                 <div className="row flex-nowrap">
                     <Sidebar user={user} isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
                     <main className={`main-content ${isSidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
                         <Routes>
-                            <Route exact path="/" element={<NewsFeed />} />
-                            <Route exact path="/profile" element={<UserProfile />} />
+
+
+                            <Route key="home" exact path="/" element={<NewsFeed />} />
+
+
+                            <Route key="user_profile" exact path="/profile" element={<UserProfile />} />
+                            <Route key="publisher" path="/publisher/:name" element={<PublisherProfile />} />
+
+
                             <Route key="favorite" exact path="/favorite" element={<FavoriteFeed />} />
                             <Route key="read_later" exact path="/read-later" element={<ReadLaterFeed />} />
                             <Route key="following" exact path="/following" element={<FollowingFeed />} />
-                            <Route key="publisher" path="/publisher/:name" element={<PublisherProfile />} />
+
+
+                            <Route key="search" path="/search" element={<SearchPage />} />
                             <Route key="category" path="/category/:title" element={<CategoryFeed />} />
                             <Route key="tag" path="/tag/:title" element={<TagFeed />} />
-                            <Route path="/login" element={<Login setUser={setUser} />} />
-                            <Route path="/logout" element={user.isAuthenticated ? <Logout setUser={setUser} /> : <Navigate to="/" />} />
-                            <Route path="/register" element={<Register setUser={setUser} />} />
-                            <Route path="/404" element={<NotFound />} />
+
+
+                            <Route key="login" path="/login" element={<Login setUser={setUser} />} />
+                            <Route key="logout" path="/logout" element={user.isAuthenticated ? <Logout setUser={setUser} /> : <Navigate to="/" />} />
+                            <Route key="register" path="/register" element={<Register setUser={setUser} />} />
+
+
+                            <Route key="404" path="/404" element={<NotFound />} />
+
                         </Routes>
                     </main>
                 </div>

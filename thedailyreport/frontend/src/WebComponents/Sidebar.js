@@ -14,6 +14,11 @@ const Sidebar = ({ user, isOpen, toggleSidebar }) => (
                     </li>
                 )}
                 <li className="nav-item">
+                    <Link className="nav-link d-flex align-items-center" to="/search">
+                        <i className="bi bi-search me-2 fs-5"></i> {isOpen && 'Search Articles'}
+                    </Link>
+                </li>
+                <li className="nav-item">
                     <Link className="nav-link d-flex align-items-center" to="/">
                         <i className="bi bi-fire me-2 fs-5"></i> {isOpen && 'Newest Articles'}
                     </Link>

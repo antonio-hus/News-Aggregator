@@ -16,6 +16,7 @@ urlpatterns = [
     path('publisher/<str:name>/unfollow/', views.unfollow_publisher, name='unfollow_publisher'),
 
     # Articles Related Endpoint
+    path('search/', views.search_articles, name='search_articles'),
     path('articles/<int:articleId>/favorite', views.favorite_article, name='favorite_article'),
     path('articles/<int:articleId>/unfavorite', views.unfavorite_article, name='unfavorite_article'),
     path('articles/<int:articleId>/readlater', views.readlater_article, name='readlater_article'),
