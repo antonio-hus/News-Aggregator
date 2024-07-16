@@ -99,7 +99,7 @@ class Article(models.Model):
     category = models.ForeignKey(to=Category, on_delete=models.CASCADE, related_name="categorized_articles")
 
     # Article Information
-    title = models.CharField(max_length=256)
+    title = models.CharField(max_length=1024)
     provided_summary = models.TextField(max_length=2048)
     generated_summary = models.TextField(max_length=2048)
     content = models.TextField(max_length=5096)

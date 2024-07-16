@@ -45,15 +45,12 @@ def get():
                     category = div.text.strip()
                     break
 
-            # Extract image URL
-            image_url = article.find('div', class_='img').find('img')['src']
-
             # Create a dictionary to store the extracted data for this article
             article_data = scrape_article.get(link)
             complete_article_data = {
                 "title_hash": hashlib.sha256(title.encode('utf-8')).hexdigest(),
                 "content_hash": hashlib.sha256(article_data["content"].encode('utf-8')).hexdigest(),
-                "media_hash": hashlib.sha256(image_url.encode('utf-8')).hexdigest(),
+                "media_hash": hashlib.sha256(article_data["image"].encode('utf-8')).hexdigest(),
                 "publisher": publisher,
                 "url": link,
                 "writer": article_data["writer"],
@@ -63,7 +60,7 @@ def get():
                 "tags": article_data["tags"],
                 "title": title,
                 "provided_summary": summary,
-                "media_preview": image_url,
+                "media_preview": article_data["image"],
                 "content": article_data["content"]
             }
 
