@@ -91,7 +91,7 @@ function ArticleScreen() {
         <div className="container mt-4">
             <div className="card">
                 <div className="card-body">
-                    <img src={article.media_preview.url} alt="Article Media Preview" />
+                    <img src={article.media_preview.url} alt="Article Media Preview" className="img-fluid card-img-top" />
                     <h2 className="card-title">{article.title}</h2>
                     <p className="card-text"><strong>Publish Date:</strong> {new Date(article.publish_date).toLocaleString()}</p>
                     <p className="card-text"><strong>Last Updated:</strong> {new Date(article.last_updated_date).toLocaleString()}</p>
