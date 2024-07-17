@@ -38,10 +38,11 @@ def getArticles():
     """
 
     article_list = []
-    #article_list.append(DIGI24.scrape_news.get())
-    #article_list.append(BIHON.scrape_news.get())
-    #article_list.append(PROTV.scrape_news.get())
+    article_list.append(DIGI24.scrape_news.get())
+    article_list.append(BIHON.scrape_news.get())
+    article_list.append(PROTV.scrape_news.get())
     article_list.append(ZIARULFINANCIAR.scrape_news.get())
+    article_list.append(ANTENASPORT.scrape_news.get())
     return article_list
 
 
