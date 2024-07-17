@@ -11,6 +11,7 @@ urlpatterns = [
     path('user/profile/update/', views.update_user_data, name='update_user_data'),
 
     # News Source Related Endpoints
+    path('get_publishers/', views.get_publishers, name='get_publishers'),
     path('publisher/<str:name>/', views.get_publisher_data, name='get_publisher_data'),
     path('publisher/<str:name>/follow/', views.follow_publisher, name='follow_publisher'),
     path('publisher/<str:name>/unfollow/', views.unfollow_publisher, name='unfollow_publisher'),
@@ -29,6 +30,10 @@ urlpatterns = [
     path('articles_publisher/<str:name>/', views.get_publisher_news, name='get_articles_publisher'),
     path('articles_category/<str:title>/', views.get_category_news, name='get_articles_category'),
     path('articles_tag/<str:title>/', views.get_tagged_news, name='get_articles_tag'),
+
+    # Recommendation System Endpoints
+    path('collaborative_filter_articles/', views.recommend_articles_by_users, name='recommend_articles_by_users'),
+    path('content_filter_articles/', views.recommend_articles_by_content, name='recommend_articles_by_content'),
 
     # Authentication Endpoints
     path('login/', views.login_view, name="login"),

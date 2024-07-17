@@ -276,6 +276,14 @@ def get_publisher_data(request, name: str):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticatedOrReadOnly])
+def get_publishers(request):
+    publishers = NewsSource.objects.all()
+    serializer = NewsSourceSerializer(publishers, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def get_category_news(request, title: str):
     try:
         category = Category.objects.get(title=title)
@@ -300,6 +308,49 @@ def get_tagged_news(request, title: str):
     articles = Article.objects.filter(tags=tag)
     paginator = CustomPagination()
     paginated_articles = paginator.paginate_queryset(articles, request)
+    serializer = ArticleSerializer(paginated_articles, many=True, context={'request': request})
+    return paginator.get_paginated_response(serializer.data)
+
+
+#####################################
+# ARTICLE RECOMMENDATIONS ENDPOINTS #
+#####################################
+
+# Collaborative Filtering
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def recommend_articles_by_users(request):
+    user = request.user
+
+    # Find articles favorited by users who have also favorited articles that this user has favorited
+    favorited_articles_ids = user.favorite_articles.values_list('id', flat=True)
+    similar_users = User.objects.filter(favorite_articles__in=favorited_articles_ids).exclude(id=user.id).distinct()
+    recommended_articles = Article.objects.filter(favorited_by__in=similar_users).exclude(favorited_by=user)
+
+    paginator = CustomPagination()
+    paginated_articles = paginator.paginate_queryset(recommended_articles, request)
+    serializer = ArticleSerializer(paginated_articles, many=True, context={'request': request})
+    return paginator.get_paginated_response(serializer.data)
+
+
+# Content Filtering
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def recommend_articles_by_content(request):
+    user = request.user
+
+    # Get categories and tags of articles favorited by the user
+    favorited_categories = user.favorite_articles.values_list('category__id', flat=True).distinct()
+    favorited_tags = user.favorite_articles.values_list('tags__id', flat=True).distinct()
+
+    # Filter articles based on favorited categories or favorited tags, and exclude those already favorited by the user
+    recommended_articles = Article.objects.filter(
+        Q(category__id__in=favorited_categories) | Q(tags__id__in=favorited_tags)
+    ).exclude(favorited_by=user).distinct()
+
+    # Paginate the recommended articles
+    paginator = CustomPagination()
+    paginated_articles = paginator.paginate_queryset(recommended_articles, request)
     serializer = ArticleSerializer(paginated_articles, many=True, context={'request': request})
     return paginator.get_paginated_response(serializer.data)
 

@@ -28,4 +28,12 @@ function TagFeed() {
     return <ArticleFeed endpoint={`http://localhost:8000/api/articles_tag/${title}`} title={`Articles tagged with ${title}:`} permission="any" />;
 }
 
-export {NewsFeed, FollowingFeed, FavoriteFeed, ReadLaterFeed, CategoryFeed, TagFeed};
+function CollaborativeFilteringFeed() {
+    return <ArticleFeed endpoint={`http://localhost:8000/api/collaborative_filter_articles/`} title="Liked by users similar to you:" permission="auth" />;
+}
+
+function ContentFilteringFeed() {
+    return <ArticleFeed endpoint={`http://localhost:8000/api/content_filter_articles/`} title="Based on what you liked:" permission="auth" />;
+}
+
+export {NewsFeed, FollowingFeed, FavoriteFeed, ReadLaterFeed, CategoryFeed, TagFeed, CollaborativeFilteringFeed, ContentFilteringFeed};

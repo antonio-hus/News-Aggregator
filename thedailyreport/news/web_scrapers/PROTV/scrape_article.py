@@ -23,8 +23,10 @@ def get(url):
         article = BeautifulSoup(response.content, 'html.parser')
 
         # Extracting media
-        image = article.find('div', class_='article--media').find('img')['src'] \
-            if article.find('div', class_='article--media').find('img') else "No Media Found"
+        image_div = article.find('div', class_='article--media')
+        if image_div:
+            image = image_div.find('img')['src'] \
+                if image_div.find('img') else "No Media Found"
 
         # Finding main content
         content_div = article.find('div', class_='article--text')

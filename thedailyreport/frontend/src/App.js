@@ -5,7 +5,15 @@ import axios from 'axios';
 import NotFound from './ErrorScreens/404Page';
 import UserProfile from "./Profiles/UserProfile";
 import SearchPage from "./Articles/SearchPage";
-import {NewsFeed, FollowingFeed, FavoriteFeed, ReadLaterFeed, CategoryFeed, TagFeed} from './Articles/NewsFeed';
+import {
+    NewsFeed,
+    FollowingFeed,
+    FavoriteFeed,
+    ReadLaterFeed,
+    CategoryFeed,
+    TagFeed,
+    CollaborativeFilteringFeed, ContentFilteringFeed
+} from './Articles/NewsFeed';
 import PublisherProfile from './Profiles/PublisherProfile';
 import { Login, Logout, Register } from './Authentication';
 import Sidebar from './WebComponents/Sidebar';
@@ -13,6 +21,7 @@ import Disclaimer from "./WebComponents/Disclaimer";
 
 import './App.css';
 import ArticleScreen from "./Articles/ArticleScreen";
+import PublisherFeed from "./Articles/PublisherFeed";
 
 
 function App() {
@@ -68,7 +77,14 @@ function App() {
                         <Routes>
 
 
-                            <Route key="home" exact path="/" element={<NewsFeed />} />
+                            <Route key="home" exact path="/" element={
+                                <>
+                                    <PublisherFeed />
+                                    <NewsFeed />
+                                    <ContentFilteringFeed />
+                                    <CollaborativeFilteringFeed />
+                                </>
+                            } />
                             <Route key="article" path="/articles/:articleId" element={<ArticleScreen />} />
 
 

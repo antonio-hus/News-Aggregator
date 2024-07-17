@@ -25,7 +25,7 @@ const Login = ({ setUser }) => {
         <>
             <h2 style={{ margin: '20px' }}>Login</h2>
             <form onSubmit={handleLogin}>
-                <div className="form-group" style={{ margin: '20px' }}>
+                <div className="form-group">
                     <input
                         type="text"
                         placeholder="Username"
@@ -34,7 +34,7 @@ const Login = ({ setUser }) => {
                         className="form-control" style={{ margin: '20px' }}
                     />
                 </div>
-                <div className="form-group" style={{ margin: '20px' }}>
+                <div className="form-group">
                 <input
                     type="password"
                     placeholder="Password"

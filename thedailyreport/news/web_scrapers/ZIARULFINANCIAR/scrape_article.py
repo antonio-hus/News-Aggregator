@@ -22,13 +22,19 @@ def get(url):
         response.raise_for_status()  # Raise an exception for bad status codes
 
         # Parse the HTML content of the page
-        article = BeautifulSoup(response.content, 'html.parser')
+        soup = BeautifulSoup(response.content, 'html.parser')
+        article = soup.find('div', class_='article')
+        if not article:
+            return article_data
 
-        category_div = article.find('div', class_='aboutArticle')
-        category = category_div.find('span', class_='labelTag fleft').text.strip()
+        category_div = article.find('span', class_='underline')
+        if category_div:
+            category = category_div.find('span', class_='labelTag fleft').text.strip()
+        else:
+            category = 'N/A'
 
         # Finding main content
-        paragraphs = article.find('div', class_='article').find_all('p')
+        paragraphs = article.find_all('p')
         article_content = [paragraph.text.strip() for paragraph in paragraphs]
 
         summary = article_content[1]
@@ -38,8 +44,7 @@ def get(url):
         else:
             content = '\n'.join(article_content[1:-19]) if article_content else "Content not found."
 
-        image_div = article.find('div', class_='article')
-        image = image_div.find('img')['src']
+        image = article.find('img')['src']
         image = 'https:' + image
 
         author_div = article.find('div', class_='author clear').find('a')
