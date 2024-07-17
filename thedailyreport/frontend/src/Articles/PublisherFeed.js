@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
+import { Link } from "react-router-dom";
 import './PublisherFeed.css';
 
 function PublisherFeed() {
@@ -36,7 +37,9 @@ function PublisherFeed() {
                     <div key={publisher.id} className="col">
                         <div className="card h-100">
                             <div className="card-body">
-                                <h5 className="card-title">{publisher.name}</h5>
+                                <Link to={`/publisher/${encodeURIComponent(publisher.name)}`} className="link-no-underline">
+                                  <h5 className="card-title">{publisher.name}</h5>
+                                </Link>
                             </div>
                         </div>
                     </div>
