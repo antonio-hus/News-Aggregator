@@ -20,6 +20,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
+from rest_framework.pagination import PageNumberPagination
 
 # User Defined
 from .models import User, Media, Category, Tag, NewsSource, Article
@@ -67,6 +68,12 @@ def update_user_data(request):
 ##########################
 # ARTICLE INFO ENDPOINTS #
 ##########################
+
+class CustomPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticatedOrReadOnly])
@@ -119,9 +126,10 @@ def get_all_news(request):
         except Tag.DoesNotExist:
             return Response({"error": f"Tag '{tag_title}' does not exist."}, status=404)
 
-    # Serialize queryset using DRF serializer
-    serializer = ArticleSerializer(articles, many=True, context={'request': request})
-    return Response(serializer.data)
+    paginator = CustomPagination()
+    paginated_articles = paginator.paginate_queryset(articles, request)
+    serializer = ArticleSerializer(paginated_articles, many=True, context={'request': request})
+    return paginator.get_paginated_response(serializer.data)
 
 
 @api_view(['GET'])
@@ -152,9 +160,10 @@ def get_following_news(request):
         except Tag.DoesNotExist:
             return Response({"error": f"Tag '{tag_title}' does not exist."}, status=404)
 
-    # Serialize queryset using DRF serializer
-    serializer = ArticleSerializer(articles, many=True, context={'request': request})
-    return Response(serializer.data)
+    paginator = CustomPagination()
+    paginated_articles = paginator.paginate_queryset(articles, request)
+    serializer = ArticleSerializer(paginated_articles, many=True, context={'request': request})
+    return paginator.get_paginated_response(serializer.data)
 
 
 @api_view(['GET'])
@@ -182,8 +191,10 @@ def get_read_later_news(request):
             except Tag.DoesNotExist:
                 return Response({"error": f"Tag '{tag_title}' does not exist."}, status=404)
 
-        serializer = ArticleSerializer(articles, many=True, context={'request': request})
-        return Response(serializer.data)
+        paginator = CustomPagination()
+        paginated_articles = paginator.paginate_queryset(articles, request)
+        serializer = ArticleSerializer(paginated_articles, many=True, context={'request': request})
+        return paginator.get_paginated_response(serializer.data)
 
     except ObjectDoesNotExist as e:
         return Response({"error": str(e)}, status=404)
@@ -214,8 +225,10 @@ def get_favorite_news(request):
             except Tag.DoesNotExist:
                 return Response({"error": f"Tag '{tag_title}' does not exist."}, status=404)
 
-        serializer = ArticleSerializer(articles, many=True, context={'request': request})
-        return Response(serializer.data)
+        paginator = CustomPagination()
+        paginated_articles = paginator.paginate_queryset(articles, request)
+        serializer = ArticleSerializer(paginated_articles, many=True, context={'request': request})
+        return paginator.get_paginated_response(serializer.data)
 
     except ObjectDoesNotExist as e:
         return Response({"error": str(e)}, status=404)
@@ -230,8 +243,10 @@ def get_publisher_news(request, name: str):
         return Response({"error": f"Publisher '{name}' does not exist."}, status=404)
 
     articles = Article.objects.filter(publisher=publisher)
-    serializer = ArticleSerializer(articles, many=True, context={'request': request})
-    return Response(serializer.data)
+    paginator = CustomPagination()
+    paginated_articles = paginator.paginate_queryset(articles, request)
+    serializer = ArticleSerializer(paginated_articles, many=True, context={'request': request})
+    return paginator.get_paginated_response(serializer.data)
 
 
 @api_view(['GET'])
@@ -268,8 +283,10 @@ def get_category_news(request, title: str):
         return Response({"error": f"Category '{title}' does not exist."}, status=404)
 
     articles = Article.objects.filter(category=category)
-    serializer = ArticleSerializer(articles, many=True, context={'request': request})
-    return Response(serializer.data)
+    paginator = CustomPagination()
+    paginated_articles = paginator.paginate_queryset(articles, request)
+    serializer = ArticleSerializer(paginated_articles, many=True, context={'request': request})
+    return paginator.get_paginated_response(serializer.data)
 
 
 @api_view(['GET'])
@@ -281,8 +298,10 @@ def get_tagged_news(request, title: str):
         return Response({"error": f"Tag '{title}' does not exist."}, status=404)
 
     articles = Article.objects.filter(tags=tag)
-    serializer = ArticleSerializer(articles, many=True, context={'request': request})
-    return Response(serializer.data)
+    paginator = CustomPagination()
+    paginated_articles = paginator.paginate_queryset(articles, request)
+    serializer = ArticleSerializer(paginated_articles, many=True, context={'request': request})
+    return paginator.get_paginated_response(serializer.data)
 
 
 ##############################
