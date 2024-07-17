@@ -1,12 +1,17 @@
-# Imports Section
+###################
+# IMPORTS SECTION #
+###################
 # Python Libraries
 import requests
 import hashlib
 from bs4 import BeautifulSoup
+# Project Libraries
 from . import scrape_article
 
 
-# Gets news from ProTV Website
+#####################
+# NEWS LIST SCRAPER #
+#####################
 def get():
 
     # Create News List
@@ -62,4 +67,6 @@ def get():
             # Append the dictionary to the articles_list
             article_list.append(complete_article_data)
 
+    # Returns the list of articles if everything went well
+    # Returns an empty list in case of errors
     return article_list

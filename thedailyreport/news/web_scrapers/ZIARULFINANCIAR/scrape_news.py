@@ -1,12 +1,17 @@
-# Imports Section
+###################
+# IMPORTS SECTION #
+###################
 # Python Libraries
 import requests
 import hashlib
 from bs4 import BeautifulSoup
+# Project Libraries
 from . import scrape_article
 
 
-# Gets news from ZF Website
+#####################
+# NEWS LIST SCRAPER #
+#####################
 def get():
 
     # Create News List
@@ -34,8 +39,8 @@ def get():
 
             # Extract URL
             url_a = article.find('a')
-            url_elem = url_a['href'] if article.find('a') else "No URL found"
-            url_elem = "https://www.zf.ro" + url_elem
+            url = url_a['href'] if article.find('a') else "No URL found"
+            url = "https://www.zf.ro" + url
 
             # Extract image source
             img_elem = url_a.find('img') if url_a else None
@@ -46,13 +51,13 @@ def get():
                 img_src = "No image found"
 
             # Create a dictionary to store the extracted data for this article
-            article_data = scrape_article.get(url_elem)
+            article_data = scrape_article.get(url)
             complete_article_data = {
                 "title_hash": hashlib.sha256(title.encode('utf-8')).hexdigest(),
                 "content_hash": hashlib.sha256(article_data["content"].encode('utf-8')).hexdigest(),
                 "media_hash": hashlib.sha256(img_src.encode('utf-8')).hexdigest(),
                 "publisher": publisher,
-                "url": url_elem,
+                "url": url,
                 "writer": article_data["writer"],
                 "publish_date": '',
                 "last_updated_date": '',
@@ -67,4 +72,6 @@ def get():
             # Append the dictionary to the articles_list
             article_list.append(complete_article_data)
 
+    # Returns the list of articles if everything went well
+    # Returns an empty list in case of errors
     return article_list

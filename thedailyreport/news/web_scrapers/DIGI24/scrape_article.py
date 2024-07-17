@@ -1,12 +1,22 @@
-# Imports Section
+###################
+# IMPORTS SECTION #
+###################
 # Python Libraries
 import requests
 from bs4 import BeautifulSoup
 
 
-# Gets article information from dig24 Website
+########################
+# NEWS ARTICLE SCRAPER #
+########################
 def get(url):
-    article_data = {}
+
+    # Return value if scraping goes wrong
+    article_data = {
+        "writer": 'No writer mentioned',
+        "tags": ["N/A"],
+        "content": 'No content found',
+    }
 
     try:
         # Send a GET request to the URL
@@ -26,31 +36,33 @@ def get(url):
         content = '\n'.join(article_content[:-2]) if article_content else "Content not found."
 
         if "Editor : " in article_content[-2]:
-            author_name = article_content[-2].replace("Editor : ", "").strip()
+            writer_name = article_content[-2].replace("Editor : ", "").strip()
         else:
-            # Author is not denoted by a p
+            # writer is not denoted by a p
             # Enlarge content
             content = content + "\n" + article_content[-2]
 
-            # Extracting author
-            author_tag = article.find('p', text=lambda x: x and " Editor : " in x)
-            if author_tag:
-                author_name = author_tag.text.replace(" Editor : ", "").strip()
+            # Extracting writer
+            writer_tag = article.find('p', text=lambda x: x and " Editor : " in x)
+            if writer_tag:
+                writer_name = writer_tag.text.replace(" Editor : ", "").strip()
             else:
-                author_name = 'Author not found'
+                writer_name = 'writer not found'
 
-        # Extracting tags
+        # Extract tags
         tags = [tag.get_text().strip() for tag in article.find_all('li', class_="tags-list-item") if "Etichete:" not in tag.get_text().strip()]
 
+        # Set article data
         article_data = {
-            "writer": author_name,
-            "publish_date": publish_date,
-            "last_updated_date": last_updated_date,
+            "writer": writer_name,
             "tags": tags,
             "content": content,
         }
 
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching or parsing article: {e}")
+    # Catch exceptions
+    except Exception:
+        pass
 
+    # Returns above defined default values if something goes wrong with scraping
+    # Returns the actual values if everything goes well
     return article_data

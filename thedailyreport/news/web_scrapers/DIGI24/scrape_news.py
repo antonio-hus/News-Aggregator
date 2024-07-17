@@ -1,12 +1,17 @@
-# Imports Section
+###################
+# IMPORTS SECTION #
+###################
 # Python Libraries
 import requests
 import hashlib
 from bs4 import BeautifulSoup
+# Project Libraries
 from . import scrape_article
 
 
-# Gets news from dig24 Website
+#####################
+# NEWS LIST SCRAPER #
+#####################
 def get():
 
     # Create News List
@@ -41,27 +46,27 @@ def get():
             category = category_elem.get_text().strip() if category_elem else "No category found"
 
             # Extract URL
-            url_elem = article.find('a')['href'] if article.find('a') else "No URL found"
-            if url_elem[0] == '/':
-                url_elem = "https://www.digi24.ro" + url_elem
+            url = article.find('a')['href'] if article.find('a') else "No URL found"
+            if url[0] == '/':
+                url = "https://www.digi24.ro" + url
 
-            if "digisport.ro" in url_elem:
+            if "digisport.ro" in url:
                 continue
 
             # Extract image source
             img_elem = article.find('img')['src'] if article.find('img') else "No image found"
 
             # Create a dictionary to store the extracted data for this article
-            article_data = scrape_article.get(url_elem)
+            article_data = scrape_article.get(url)
             complete_article_data = {
                 "title_hash": hashlib.sha256(title.encode('utf-8')).hexdigest(),
-                "content_hash": hashlib.sha256(article_data["content"].encode   ('utf-8')).hexdigest(),
+                "content_hash": hashlib.sha256(article_data["content"].encode('utf-8')).hexdigest(),
                 "media_hash": hashlib.sha256(img_elem.encode('utf-8')).hexdigest(),
                 "publisher": publisher,
-                "url": url_elem,
+                "url": url,
                 "writer": article_data["writer"],
-                "publish_date": article_data["publish_date"],
-                "last_updated_date": article_data["last_updated_date"],
+                "publish_date": '',
+                "last_updated_date": '',
                 "category": category,
                 "tags": article_data["tags"],
                 "title": title,
@@ -73,4 +78,6 @@ def get():
             # Append the dictionary to the articles_list
             article_list.append(complete_article_data)
 
+    # Returns the list of articles if everything went well
+    # Returns an empty list in case of errors
     return article_list

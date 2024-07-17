@@ -1,12 +1,23 @@
-# Imports Section
+###################
+# IMPORTS SECTION #
+###################
 # Python Libraries
 import requests
 from bs4 import BeautifulSoup
 
 
-# Get article information from the given URL
+########################
+# NEWS ARTICLE SCRAPER #
+########################
 def get(url):
-    article_data = {}
+
+    # Return value if scraping goes wrong
+    article_data = {
+        "writer": 'No writer mentioned',
+        "tags": ["N/A"],
+        "content": 'No content found',
+        "image": 'No image found'
+    }
 
     try:
         # Send a GET request to the URL
@@ -16,31 +27,33 @@ def get(url):
         # Parse the HTML content of the page
         article = BeautifulSoup(response.content, 'html.parser')
 
-        # Finding main content
+        # Extracting main content
         paragraphs = article.find_all('p')
         article_content = [paragraph.text.strip() for paragraph in paragraphs]
-        content = '\n'.join(article_content) if article_content else "Content not found."
+        content = '\n'.join(article_content) if article_content else "No content found"
 
-        # Finding the author's name
-        author = article.find('div', class_='author').find('i')
-        if author:
-            author_name = author.text.strip()
+        # Extracting the writer's name
+        writer = article.find('div', class_='author').find('i')
+        if writer:
+            writer_name = writer.text.strip()
         else:
-            author_name = "No writer mentioned"
+            writer_name = "No writer mentioned"
 
-        # Finding the image's url
+        # Extract media preview
         image_url = article.find('div', class_='tac default').find('img')['src']
 
+        # Set article data
         article_data = {
-            "writer": author_name,
-            "publish_date": '',
-            "last_updated_date": '',
+            "writer": writer_name,
             "tags": ["N/A"],
             "content": content,
             "image": image_url
         }
 
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching or parsing article: {e}")
+    # Catch exceptions
+    except Exception:
+        pass
 
+    # Returns above defined default values if something goes wrong with scraping
+    # Returns the actual values if everything goes well
     return article_data
