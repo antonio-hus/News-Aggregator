@@ -166,7 +166,10 @@ function ArticleScreen() {
                         )}
                     </p>
                     <p className="card-text"><strong>Writer:</strong> {article.writer}</p>
-                    <p className="card-text"><strong>Content:</strong> {article.content}</p>
+                    <p className="card-text"><strong>Content:</strong>
+                        <br/>
+                        <span dangerouslySetInnerHTML={{ __html: article.content.replace(/\n/g, '<br style="display: block; margin: margin: 0.5em 0;" />') }} />
+                    </p>
                     <a href={article.url} className="btn btn-primary mt-3" target="_blank" rel="noopener noreferrer">Read Original</a>
                 </div>
             </div>
