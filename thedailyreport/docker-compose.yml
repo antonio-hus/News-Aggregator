@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_DB: news_db
       POSTGRES_USER: antonio
-      POSTGRES_PASSWORD: mypassword
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     networks:
@@ -26,7 +26,7 @@ services:
     environment:
       - DATABASE_NAME=news_db
       - DATABASE_USER=antonio
-      - DATABASE_PASSWORD=mypassword
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
       - CELERY_BROKER_URL=redis://redis:6379/0
@@ -67,7 +67,7 @@ services:
     environment:
       - DATABASE_NAME=news_db
       - DATABASE_USER=antonio
-      - DATABASE_PASSWORD=mypassword
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
       - CELERY_BROKER_URL=redis://redis:6379/0
@@ -88,7 +88,7 @@ services:
     environment:
       - DATABASE_NAME=news_db
       - DATABASE_USER=antonio
-      - DATABASE_PASSWORD=mypassword
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
       - CELERY_BROKER_URL=redis://redis:6379/0
