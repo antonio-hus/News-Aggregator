@@ -1,30 +1,47 @@
-import React, { useState, useEffect } from "react";
+/////////////////////
+// IMPORTS SECTION //
+/////////////////////
+// JavaScript Libraries
 import axios from 'axios';
-import './ArticleFeed.css';
+// React Libraries
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+// Style Sheets
+import './ArticleFeed.css';
 
+
+//////////////////////
+// CODE/JSX SECTION //
+//////////////////////
+// Get User Authentication Status based on token
 function isAuthenticated() {
   const token = localStorage.getItem('token');
   return token && token !== "";
 }
 
+// Article Feed View
 function ArticleFeed({ endpoint, title, permission }) {
+
+  // Article List
   const [articles, setArticles] = useState([]);
   const [sortedArticles, setSortedArticles] = useState([]);
+
+  // Filter Options
   const [sortOption, setSortOption] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
+
+  // Feed Pagination
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
 
+  // Get and Sort Articles
   useEffect(() => {
     fetchAndSortArticles(endpoint, page);
   }, [endpoint, page]);
-
   useEffect(() => {
     sortArticles();
   }, [sortOption, sortOrder, articles]);
-
   const fetchAndSortArticles = (endpoint, page) => {
     const token = localStorage.getItem('token');
     const url = `${endpoint}?page=${page}&page_size=${pageSize}`;
@@ -43,6 +60,7 @@ function ArticleFeed({ endpoint, title, permission }) {
       });
   };
 
+  // Sort Articles based on Filter
   const sortArticles = () => {
     let sorted = [...articles];
 
@@ -67,6 +85,8 @@ function ArticleFeed({ endpoint, title, permission }) {
     setSortedArticles(sorted);
   };
 
+
+  // Handle User Interactions - Favorite
   const handleFavorite = (articleId) => {
     const token = localStorage.getItem('token');
     axios.post(`http://localhost:8000/api/articles/${articleId}/favorite`, {}, {
@@ -105,6 +125,8 @@ function ArticleFeed({ endpoint, title, permission }) {
       });
   };
 
+
+  // Handle User Interactions - Read Later
   const handleReadLater = (articleId) => {
     const token = localStorage.getItem('token');
     axios.post(`http://localhost:8000/api/articles/${articleId}/readlater`, {}, {
@@ -143,6 +165,8 @@ function ArticleFeed({ endpoint, title, permission }) {
       });
   };
 
+  // JSX Section
+  // Handle Empty Article List Case
   if (articles.length === 0 || sortedArticles.length === 0) {
     return (
       <>
@@ -151,13 +175,19 @@ function ArticleFeed({ endpoint, title, permission }) {
       </>
     );
   }
-
+  // Handle Article List View
   return (
     <div id="news-feed" className="container">
+
+      {/* Display Feed Title*/}
       <h2>{title}</h2>
       <br />
+
+      {/* Display Filtering Options*/}
       <div className="sort-options mb-4">
         <div className="row">
+
+          {/* Display Select Options*/}
           <p>Filter Content by:</p>
           <div className="col-md-3">
             <select
@@ -172,6 +202,8 @@ function ArticleFeed({ endpoint, title, permission }) {
               <option value="publisher">Publisher</option>
             </select>
           </div>
+
+          {/* Display Ascending / Descending Filter Options*/}
           <div className="col-md-3">
             <select
               className="form-control"
@@ -182,22 +214,36 @@ function ArticleFeed({ endpoint, title, permission }) {
               <option value="desc">Descending</option>
             </select>
           </div>
+
         </div>
       </div>
+
+      {/* Display News Articles*/}
       {sortedArticles && sortedArticles.length > 0 ? (
         sortedArticles.map((article, index) => (
           <div key={index} className="article row mb-3">
+
+            {/* Media Preview */}
             <div className="col-md-4 d-flex align-items-center justify-content-center">
               {article.media_preview && <img src={article.media_preview.url} className="img-fluid" alt="Article Media Preview" />}
             </div>
+
             <div className="col-md-8">
               <div className="card-body">
+
+                {/* Title */}
                 <h3 className="card-title">{article.title}</h3>
+
+                {/* Summary */}
                 <p className="card-text">{article.provided_summary}</p>
+
+                {/* Publish Date */}
                 <p className="card-text"><small className="text-muted">Published: {new Date(article.publish_date).toLocaleString('en-US', {
                   year: 'numeric', month: '2-digit', day: '2-digit',
                   hour: '2-digit', minute: '2-digit',
                 })}</small></p>
+
+                {/* Publisher */}
                 <div className="mb-2">
                   <strong>Publisher:</strong> {' '}
                   {article.publisher ? (
@@ -208,6 +254,8 @@ function ArticleFeed({ endpoint, title, permission }) {
                     'Unknown Publisher'
                   )}
                 </div>
+
+                {/* Category */}
                 <div className="mb-2">
                   <strong>Category:</strong>
                   {article.category ? (
@@ -218,6 +266,8 @@ function ArticleFeed({ endpoint, title, permission }) {
                     'Uncategorized'
                   )}
                 </div>
+
+                {/* Tags */}
                 <div className="mb-2">
                   <strong>Tags:</strong>{' '}
                   {article.tags.map((tag, index) => (
@@ -232,8 +282,11 @@ function ArticleFeed({ endpoint, title, permission }) {
                     </React.Fragment>
                   ))}
                 </div>
+
                 <a href={article.url} className="btn btn-outline-primary" style={{ marginRight: '5px' }}>Source</a>
                 <a href={`/articles/${article.id}`} className="btn btn-primary">Read More</a>
+
+                {/* User Interaction Widgets */}
                 {isAuthenticated() && (
                   <div className="article-actions">
                     {article.is_favorited ? (
@@ -275,8 +328,11 @@ function ArticleFeed({ endpoint, title, permission }) {
       ) : (
         <p>Loading articles...</p>
       )}
+
+      {/* Article Pagination */}
       <div className="pagination">
           <ul className="pagination justify-content-center">
+
             <li className={`page-item ${page === 1 ? 'disabled' : ''}`}>
               <button className="page-link" onClick={() => setPage(page => Math.max(page - 1, 1))} disabled={page === 1}>
                 Previous
@@ -290,8 +346,10 @@ function ArticleFeed({ endpoint, title, permission }) {
                 Next
               </button>
             </li>
+
           </ul>
       </div>
+
     </div>
   );
 }

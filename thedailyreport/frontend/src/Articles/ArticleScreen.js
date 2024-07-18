@@ -1,20 +1,33 @@
-import React, { useState, useEffect } from "react";
+/////////////////////
+// IMPORTS SECTION //
+/////////////////////
+// Javascript Libraries
 import axios from 'axios';
-import NotFound from "../ErrorScreens/404Page";
+// React Libraries
+import React, { useState, useEffect } from "react";
 import {Link, useParams} from "react-router-dom";
+// Project Libraries
+import NotFound from "../Errors/404Page";
 
+
+//////////////////////
+// CODE/JSX SECTION //
+//////////////////////
+// Get User Authentication Status based on token
+const isAuthenticated = () => {
+        const token = localStorage.getItem('token');
+        return token !== null && token !== '';
+};
+
+// Article View
 function ArticleScreen() {
+
+    // Get Article based on id
     const { articleId } = useParams();
     const [article, setArticle] = useState(null);
-
     useEffect(() => {
-        fetchArticle(articleId);
-    }, [articleId]);
-
-    const fetchArticle = (id) => {
         const token = localStorage.getItem('token');
-        const url = `http://localhost:8000/api/articles/${id}/`;
-
+        const url = `http://localhost:8000/api/articles/${articleId}/`;
         axios.get(url, {
             headers: token ? { 'Authorization': `Token ${token}` } : {}
         })
@@ -24,8 +37,9 @@ function ArticleScreen() {
         .catch(error => {
             console.error('Error fetching article:', error);
         });
-    };
+    }, [articleId]);
 
+    // Handle Favorite Interaction
     const handleFavorite = (articleId) => {
         const token = localStorage.getItem('token');
         axios.post(`http://localhost:8000/api/articles/${articleId}/favorite`, {}, {
@@ -52,6 +66,8 @@ function ArticleScreen() {
         });
     };
 
+
+    // Handle Read Later Interaction
     const handleReadLater = (articleId) => {
         const token = localStorage.getItem('token');
         axios.post(`http://localhost:8000/api/articles/${articleId}/readlater`, {}, {
@@ -78,23 +94,25 @@ function ArticleScreen() {
         });
     };
 
+
+    // JSX Section
+    // Handle article not found situation
     if (!article) {
         return <NotFound message="Article not found!"/>;
     }
-
-    const isAuthenticated = () => {
-        const token = localStorage.getItem('token');
-        return token !== null && token !== '';
-    };
-
+    // Article Found, display accordingly
     return (
         <div className="container mt-4">
             <div className="card">
                 <div className="card-body">
+
                     <img src={article.media_preview.url} alt="Article Media Preview" className="img-fluid card-img-top" />
+
                     <h2 className="card-title">{article.title}</h2>
+
                     <p className="card-text"><strong>Publish Date:</strong> {new Date(article.publish_date).toLocaleString()}</p>
                     <p className="card-text"><strong>Last Updated:</strong> {new Date(article.last_updated_date).toLocaleString()}</p>
+
                     <p className="card-text">
                         <strong>Category:</strong>
                         {article.category ? (
@@ -105,6 +123,7 @@ function ArticleScreen() {
                             'Uncategorized'
                         )}
                     </p>
+
                     <p className="card-text">
                         <strong>Tags:</strong>
                         {article.tags.map((tag, index) => (
@@ -119,6 +138,9 @@ function ArticleScreen() {
                             </React.Fragment>
                         ))}
                     </p>
+
+                    {/* Display interaction widgets to authenticated User */}
+                    {/* Favorite, Read Later */}
                     { isAuthenticated() && (
                         <div className="article-actions mb-3">
                             { article.is_favorited ? (
@@ -153,7 +175,9 @@ function ArticleScreen() {
                             )}
                         </div>
                     )}
+
                     <br/>
+
                     <p className="card-text"><
                         strong>Publisher:</strong>
                         {' '}
@@ -165,12 +189,18 @@ function ArticleScreen() {
                             'Unknown Publisher'
                         )}
                     </p>
+
                     <p className="card-text"><strong>Writer:</strong> {article.writer}</p>
+
                     <p className="card-text"><strong>Content:</strong>
                         <br/>
+                        {/* Keep white spaces and new lines */}
+                        {/* Might be vulnerable to same attacks ( XSS ) */}
+                        {/* Alternatively user <pre>, but text does not wrap around on overflow */}
                         <span dangerouslySetInnerHTML={{ __html: article.content.replace(/\n/g, '<br style="display: block; margin: margin: 0.5em 0;" />') }} />
                     </p>
                     <a href={article.url} className="btn btn-primary mt-3" target="_blank" rel="noopener noreferrer">Read Original</a>
+
                 </div>
             </div>
         </div>

@@ -1,11 +1,19 @@
-import React, { useEffect, useState } from 'react';
+/////////////////////
+// IMPORTS SECTION //
+/////////////////////
+// JavaScript Libraries
 import axios from 'axios';
+// React Libraries
+import React, { useEffect, useState } from 'react';
 
+
+//////////////////////
+// CODE/JSX SECTION //
+//////////////////////
 const UserProfile = () => {
-    const [userData, setUserData] = useState({});
-    const [editMode, setEditMode] = useState(false);
-    const [formData, setFormData] = useState({});
 
+    // Get Extended User Data
+    const [userData, setUserData] = useState({});
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
@@ -24,6 +32,9 @@ const UserProfile = () => {
         fetchUserProfile();
     }, []);
 
+    // Form View & Submission Logic
+    const [editMode, setEditMode] = useState(false);
+    const [formData, setFormData] = useState({});
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -55,11 +66,15 @@ const UserProfile = () => {
         }
     };
 
+    // JSX Section
     return (
         <div className="container mt-5">
             <h2>User Profile</h2>
             <div className="card">
                 <div className="card-body">
+
+                    {/* Conditionally display view & edit of form */}
+
                     <div className="form-group">
                         <label>Username:</label>
                         {editMode ? (
@@ -68,6 +83,7 @@ const UserProfile = () => {
                             <p>{userData.username}</p>
                         )}
                     </div>
+
                     <div className="form-group">
                         <label>Email:</label>
                         {editMode ? (
@@ -76,6 +92,7 @@ const UserProfile = () => {
                             <p>{userData.email}</p>
                         )}
                     </div>
+
                     <div className="form-group">
                         <label>First Name:</label>
                         {editMode ? (
@@ -84,6 +101,7 @@ const UserProfile = () => {
                             <p>{userData.first_name}</p>
                         )}
                     </div>
+
                     <div className="form-group">
                         <label>Last Name:</label>
                         {editMode ? (
@@ -92,14 +110,17 @@ const UserProfile = () => {
                             <p>{userData.last_name}</p>
                         )}
                     </div>
+
                     <div className="form-group">
                         <label>Date Joined:</label>
                         <p>{new Date(userData.date_joined).toLocaleDateString()}</p>
                     </div>
+
                     <div className="form-group">
                         <label>Last Login:</label>
                         <p>{userData.last_login ? new Date(userData.last_login).toLocaleString() : '-'}</p>
                     </div>
+
                     <div className="form-group">
                         <label>Date of Birth:</label>
                         {editMode ? (
@@ -108,6 +129,7 @@ const UserProfile = () => {
                             <p>{userData.date_of_birth ? new Date(userData.date_of_birth).toLocaleDateString() : '-'}</p>
                         )}
                     </div>
+
                     <div className="form-group">
                         <label>Address:</label>
                         {editMode ? (
@@ -116,6 +138,7 @@ const UserProfile = () => {
                             <p>{userData.address ? userData.address : '-'}</p>
                         )}
                     </div>
+
                     <div className="form-group">
                         <label>Phone Number:</label>
                         {editMode ? (
@@ -124,6 +147,7 @@ const UserProfile = () => {
                             <p>{userData.phone_number ? userData.phone_number : '-'}</p>
                         )}
                     </div>
+
                     <div className="form-group">
                         <label>Gender:</label>
                         {editMode ? (
@@ -137,6 +161,7 @@ const UserProfile = () => {
                             <p>{userData.gender ? userData.gender : '-'}</p>
                         )}
                     </div>
+
                     <div className="form-group">
                         <label>Biography:</label>
                         {editMode ? (
@@ -145,6 +170,7 @@ const UserProfile = () => {
                             <p>{userData.biography ? userData.biography : '-'}</p>
                         )}
                     </div>
+
                     <div className="form-group">
                         <label>Social Media Links:</label>
                         {editMode ? (
@@ -162,6 +188,7 @@ const UserProfile = () => {
                     ) : (
                         <button className="btn btn-primary" onClick={handleEditClick}>Edit Profile</button>
                     )}
+
                 </div>
             </div>
         </div>

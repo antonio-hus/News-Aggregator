@@ -1,13 +1,22 @@
+/////////////////////
+// IMPORTS SECTION //
+/////////////////////
+// React Libraries
 import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
+
+//////////////////////
+// CODE/JSX SECTION //
+//////////////////////
 const Disclaimer = () => {
-  const [visible, setVisible] = useState(true);
 
+  // Close Disclaimer Bar Logic
+  const [visible, setVisible] = useState(true);
   const handleClose = () => {
     setVisible(false);
   };
 
+  //JSX Section
   return (
     visible && (
       <div className="sticky-top bg-danger text-white p-2 d-flex justify-content-between align-items-center">

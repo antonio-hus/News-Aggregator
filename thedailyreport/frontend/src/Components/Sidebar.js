@@ -1,11 +1,23 @@
+/////////////////////
+// IMPORTS SECTION //
+/////////////////////
+// React Libraries
 import React from 'react';
 import { Link } from 'react-router-dom';
-import 'bootstrap-icons/font/bootstrap-icons.css';
 
+
+//////////////////////
+// CODE/JSX SECTION //
+//////////////////////
 const Sidebar = ({ user, isOpen, toggleSidebar }) => (
+
     <nav className={`col-md-3 col-lg-2 d-md-block bg-light sidebar ${isOpen ? 'open' : 'closed'}`}>
         <div className="position-sticky pt-3 d-flex flex-column justify-content-center align-items-center h-100">
-            <ul className="nav flex-column align-items-center"> {/* Center items vertically */}
+
+            <ul className="nav flex-column align-items-center">
+
+                {/* Display routes conditionally based on authentication status*/}
+                {/* Extended information provided on opened sidebar*/}
                 {user.isAuthenticated && (
                     <li className="nav-item">
                         <Link className="nav-link d-flex align-items-center" to="/profile">
@@ -64,6 +76,8 @@ const Sidebar = ({ user, isOpen, toggleSidebar }) => (
                         </li>
                     </>
                 )}
+
+                {/* Sidebar Toggle Button */}
                 <li className="nav-item">
                     <div className="sidebar-toggle mt-auto" onClick={toggleSidebar}>
                         {isOpen ? (
@@ -73,7 +87,9 @@ const Sidebar = ({ user, isOpen, toggleSidebar }) => (
                         )}
                     </div>
                 </li>
+
             </ul>
+
         </div>
     </nav>
 );
