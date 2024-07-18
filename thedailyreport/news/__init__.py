@@ -1,3 +1,3 @@
-from .tasks import updateArticles
+from .tasks import updateArticlesAS, updateArticlesZF, updateArticlesBIHON, updateArticlesPROTV, updateArticlesDIGI24
 
-__all__ = ['updateArticles']
+__all__ = ['updateArticlesAS', 'updateArticlesZF', 'updateArticlesBIHON', 'updateArticlesPROTV', 'updateArticlesDIGI24']
