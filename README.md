@@ -43,22 +43,29 @@ Besides those there are some Django App, Environment and Docker Configuration fi
 1. **Backend**:
 The main Django App - Situated inside the news/ folder.  
 The migrations/ folder contain the project's migrations.  
-The webscrapers/ folder contain the handmade web scrapers built in Python dedicated to their website ( found in the name of the scraper ). Here the get_news method scrapes the preview data and get_article method
+The webscrapers/ folder contain the handmade web scrapers built in Python dedicated to their website (found in the name of the scraper). Here the get_news method scrapes the preview data and get_article method
 scrapes the article given by the url of the post.  
-The admin.py file contains the Admin Screen Setup ( this can be accessed via the /admin route ).  
+The admin.py file contains the Admin Screen Setup (this can be accessed via the /admin route).  
 The apps.py file contains the App Configurations - in particular one that stands out is NewsConfig - which sends a signal when all apps are loaded and the background tasks can start working.
-The models.py file define the Models of the web application - User, Media, Category, Tag, NewsSource, Article - with their respective fields, relations and methods. ( To be noted here are the hash fields
-inside the Article structure that permit very fast queries and change detection. ).  
+The models.py file define the Models of the web application - User, Media, Category, Tag, NewsSource, Article - with their respective fields, relations and methods (To be noted here are the hash fields
+inside the Article structure that permit very fast queries and change detection).  
 The serializers.py file define a JSON serialization method of all the models above.  
-The signals.py file contains the signals sent out by NewsConfig ( explained above. ).  
-The tasks.py file define the background tasks which update the article database with newly scraped posts ( note that they are atomic so they don't corupt data; also they are separate to be parallelized ).  
+The signals.py file contains the signals sent out by NewsConfig (explained above).  
+The tasks.py file define the background tasks which update the article database with newly scraped posts (note that they are atomic so they don't corupt data; also they are separate to be parallelized).  
 The urls.py file define the endpoints of the API.  
 The utils.py file define frequently used operations - logging methods, media handlers and database operations.  
 The views.py file define the inner-workings of the API endpoints - with GET, PUT and POST operations - for either authenticated or unauthenticated viewers.  
    
-3. **Frontend**
-4. **Background**
-5. **Database**
+2. **Frontend**
+
+   
+3. **Background**
+Uses Celery, with a Redis Broker to queue background tasks.
+Every 6 hours it triggers the tasks in tasks.py to run (only after all apps are loaded) - as defined in the celery.py file.
+   
+4. **Database**
+Uses a Docker Image of PostgreSQL.  
+It is only interacted with using the Django ORM.
 
 ## Technologies Used
 - **Django**: Backend Framework used to develop a RESTful API to serve the frontend.
