@@ -37,6 +37,11 @@ Moreover as they interact with posts, suggested articles will pop up by collabor
 or by content filtering ( from favorite article's category or tag ).
 
 ## Project Structure
+The app is structured in 4 main parts:
+1. **Backend**
+2. **Frontend**
+3. **Background**
+4. **Database**
 
 ## Technologies Used
 - **Django**: Backend Framework used to develop a RESTful API to serve the frontend.
