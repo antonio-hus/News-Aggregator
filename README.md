@@ -57,13 +57,26 @@ The utils.py file define frequently used operations - logging methods, media han
 The views.py file define the inner-workings of the API endpoints - with GET, PUT and POST operations - for either authenticated or unauthenticated viewers.  
    
 2. **Frontend**
+The frontend React.js App - Situated inside the frontend/ folder.  
+The public/ folder contains metadata about the website (favicon, logo, manifest.json, robots.txt).
+The src/ folder contains the React Components of the app.  
+The StyleSheet.css defines the main stylesheet of the app.  
+The index.js file defines the web HTML structure.  
+The App.js file defines the most important component of the app - it contains a router to all other pages, and sets the layout of the site.  
+The Articles/ folder contain all components that have to do with articles - basic - ArticleFeed, ArticleScreen - and generalizations - NewsFeeds, along with variations Search Feed and Publisher Feed which contain their respective additional information, as the name suggests.
+The Authentication/ folder contain the authentication related components - login, register and logout - using Tokens (issued by the Django backend).
+The Components/ folder contains the sidebar and disclaimer components.
+The Errors/ folder contain the error screens (currently only 404-NotFound).
+The Profiles/ folder contains the User (here the user can see and update its data) and Publisher Profiles (here the publisher contact information is shown along with a follow option and all its posts).
 
+
+The other files are React and Docker Configuration Files.
    
-3. **Background**
+4. **Background**
 Uses Celery, with a Redis Broker to queue background tasks.
 Every 6 hours it triggers the tasks in tasks.py to run (only after all apps are loaded) - as defined in the celery.py file.
    
-4. **Database**
+5. **Database**
 Uses a Docker Image of PostgreSQL.  
 It is only interacted with using the Django ORM.
 
