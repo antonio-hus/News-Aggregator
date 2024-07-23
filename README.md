@@ -19,7 +19,7 @@ To run the News Aggregator locally, follow these steps:
 1. Clone the repository:
     ```sh
     git clone https://github.com/antonio-hus/News-Aggregator.git
-    cd News-Aggregator
+    cd News-Aggregator/thedailyreport
     ```
 
 2. Build and start the Docker containers:
@@ -27,10 +27,6 @@ To run the News Aggregator locally, follow these steps:
     docker-compose up --build
     ```
 
-3. Set up environment variables (if any, specify here):
-    ```sh
-    export VARIABLE_NAME=value
-    ```
 
 ## Usage
 The website can be used without an account, but for the best experience i kindly suggest registering for one.
