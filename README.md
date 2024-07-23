@@ -16,6 +16,22 @@ The ultimate aim of this project is to present people with the necessary facts t
 ## Installation
 To run the News Aggregator locally, follow these steps:
 
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/antonio-hus/News-Aggregator.git
+    cd News-Aggregator
+    ```
+
+2. Build and start the Docker containers:
+    ```sh
+    docker-compose up --build
+    ```
+
+3. Set up environment variables (if any, specify here):
+    ```sh
+    export VARIABLE_NAME=value
+    ```
+
 ## Usage
 The website can be used without an account, but for the best experience i kindly suggest registering for one.
 The application fetches the latest news articles ( every 6 hours ), and present them in an easily digestible format.
