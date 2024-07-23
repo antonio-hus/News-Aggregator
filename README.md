@@ -53,3 +53,4 @@ The app is structured in 4 main parts:
 - **PostgreSQL**: Database for storing data.
 
 ## License
+This project is a personal endeavor and is not intended for public use or distribution. All rights are reserved by the author.
