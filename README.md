@@ -9,7 +9,6 @@ The ultimate aim of this project is to present people with the necessary facts t
 - [Installation](#installation)
 - [Usage](#usage)
 - [Project Structure](#project-structure)
-- [Features](#features)
 - [Technologies Used](#technologies-used)
 - [License](#license)
 
@@ -36,3 +35,16 @@ Browsing has been designed in such a way to allow those interested to find artic
 the search route or filters both ascending and descending ( by publish date, category, tag, publisher, title ).
 Moreover as they interact with posts, suggested articles will pop up by collaborative filtering ( favorited by similar users ),
 or by content filtering ( from favorite article's category or tag ).
+
+## Project Structure
+
+## Technologies Used
+- **Django**: Backend Framework used to develop a RESTful API to serve the frontend.
+- **Python**: Used in pair with Django Framework and to build web scrapers using the BeautifulSoup Library.
+- **Celery**: Task queue for handling background jobs ( scraping articles from media sources ) - allowed paralelization of tasks and reduced server downtime.
+- **React.js**: Frontend Framework used to develop the webpage.
+- **JavaScript**, **JSX**, **HTML**, **CSS**, **Bootstrap**: Used in pair with React.js Framework
+- **Docker**: Containerization of the application.
+- **PostgreSQL**: Database for storing data.
+
+## License
