@@ -50,6 +50,16 @@ To run the News Aggregator locally, follow these steps:
     docker-compose up --build
     ```
 
+**Observation**: The news articles are automatically updated every 6 hours. Given the app will go through a cold start after download you might have to trigger the task manually (as to not wait 6 hours for the program to do it). For this run the commands below:
+ ```sh
+docker-compose exec celery_worker bash
+celery -A thedailyreport call news.tasks.updateArticlesAS
+celery -A thedailyreport call news.tasks.updateArticlesBIHON
+celery -A thedailyreport call news.tasks.updateArticlesDIGI24
+celery -A thedailyreport call news.tasks.updateArticlesPROTV
+celery -A thedailyreport call news.tasks.updateArticlesZF
+ ```
+
 
 ## Usage
 The website can be used without an account, but for the best experience i kindly suggest registering for one.
