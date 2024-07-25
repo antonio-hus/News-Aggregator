@@ -1,5 +1,8 @@
 # The Daily Report 
 
+![Website View](images/website-view.png)
+For more in-app photos take a look in the images folder.
+
 ## Overview
 The Daily Report is a web platform designed to aggregate news articles from multiple sources of Mass Media.
 It offers users one place to stay up to date with all current events and opinions of multiple jurnalists.
