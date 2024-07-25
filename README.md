@@ -6,11 +6,35 @@ It offers users one place to stay up to date with all current events and opinion
 The ultimate aim of this project is to present people with the necessary facts to be able to form an unbiased view of the world around us.
 
 ## Table of Contents
+- [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Project Structure](#project-structure)
 - [Technologies Used](#technologies-used)
 - [License](#license)
+
+## Prerequisites
+Before running the app on your system, ensure you have the following:
+
+1. **Docker**: A platform that uses OS-level virtualization to deliver software in packages called containers. To install Docker:
+    - **Linux**: Follow the instructions on the [Docker installation page for Linux](https://docs.docker.com/engine/install/#server).
+    - **macOS**: Download and install Docker Desktop from [Docker Desktop for macOS](https://docs.docker.com/desktop/install/mac-install/).
+    - **Windows**: Download and install Docker Desktop from [Docker Desktop for Windows](https://docs.docker.com/desktop/install/windows-install/).
+
+2. **Git**: A version control system to clone the repository. To install Git:
+    - **Linux**: Install Git using your package manager. For example, on Ubuntu:
+        ```sh
+        sudo apt-get update
+        sudo apt-get install git
+        ```
+    - **macOS**: Install Git via Homebrew:
+        ```sh
+        brew install git
+        ```
+    - **Windows**: Download and install Git from [Git for Windows](https://gitforwindows.org/).
+
+3. **Internet Connection**: Required to download the repository and Docker images.
+
 
 ## Installation
 To run the News Aggregator locally, follow these steps:
